@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* Superseded prototype code is not part of the app. */
+@source not "../../archive";
+
+/*
+ * Design tokens from the approved Phase 2 creative direction (interface palette).
+ * World/environment colours will live with the 3D code, not here.
+ */
+@theme inline {
+  --font-display: var(--font-bricolage), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-manrope), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, Consolas, monospace;
+}
+
+@theme {
+  --color-ink: #0f0d16;
+  --color-glass: #181523;
+  --color-raised: #221e30;
+  --color-line: #2f2a40;
+  --color-fg: #f4efe6;
+  --color-muted: #a9a2b9;
+  --color-lavender: #c084fc;
+  --color-periwinkle: #818cf8;
+  --color-rose: #f472b6;
+  --color-lamp: #ffd27a;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-ink font-sans text-fg antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-lamp);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--color-lavender);
+    color: var(--color-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

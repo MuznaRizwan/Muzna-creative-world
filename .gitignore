@@ -1,0 +1,59 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+Thumbs.db
+*.pem
+
+# debug
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env files (secrets); only the template is committed
+.env*
+!.env.example
+
+# vercel
+.vercel
+
+# local editor / agent tooling
+/.claude/
+/.vscode/
+/.idea/
+
+# typescript artefacts (the app is JavaScript; these may appear from tooling)
+*.tsbuildinfo
+next-env.d.ts
+
+# Blender auto-saves and backups
+*.blend1
+*.blend2
+*.blend@
+
+# Adobe After Effects temp files
+*.aep~
+Adobe After Effects Auto-Save/
+.aeswap*
+
+# Art source files (Blender / After Effects) are separate deliverables
+/art-source/**
+!/art-source/
+!/art-source/README.md
+!/art-source/*/
+!/art-source/*/.gitkeep
