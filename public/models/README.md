@@ -34,8 +34,8 @@ How the engine prepares `Cat.glb` (`src/lib/three/avatar/CatModel.js`):
   `src/lib/three/avatar/catClips.js`.
 - Export animation files with *only* the armature action (no mesh) to cut download size.
   At the moment each one carries a full copy of the cat, about 1.2–1.5 MB compressed.
-- The `.blend` source files sit next to the GLBs inside `public/`, so they would be served
-  and deployed. Moving them to `art-source/blender/` keeps them out of the site.
+- The `.blend` source files for these exports live in `art-source/blender/cat/`
+  (git-ignored, not served). Keep them out of `public/`, which is deployed.
 
 ## Other models
 

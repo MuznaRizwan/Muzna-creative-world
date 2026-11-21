@@ -6,5 +6,5 @@ submitted as separate deliverables).
 
 | Folder | Contents | Exported to |
 |---|---|---|
-| `blender/` | `.blend` files for the cat and props | `public/models/` |
+| `blender/` | `.blend` files for the cat (`blender/cat/`) and props | `public/models/` |
 | `after-effects/` | `.aep` project for the promotional video | `public/videos/` |
