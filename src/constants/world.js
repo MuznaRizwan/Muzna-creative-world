@@ -27,34 +27,42 @@ export const WORLD = Object.freeze({
   spawn: Object.freeze({ x: 0, z: 31 }),
 });
 
-/** Level-design metrics for the cat (see the Phase 2 creative direction). */
+/**
+ * Cat metrics. Phase 2 planned a cat about 1 unit tall; next to the world's
+ * benches, lamps and signs the real model read too small at that size, so it
+ * stands 1.6 to the ear tips. Collision, steps, jump, reach, speeds and the
+ * camera are all sized from these values.
+ */
 export const CAT_METRICS = Object.freeze({
-  height: 1,
-  length: 1.1,
-  width: 0.4,
-  collisionRadius: 0.4,
-  stepHeight: 0.35,
-  jumpApex: 0.9,
+  height: 1.6,
+  length: 2.3,
+  width: 0.64,
+  /** The body is two circles of this radius, ±bodyOffset along the spine. */
+  collisionRadius: 0.42,
+  bodyOffset: 0.5,
+  stepHeight: 0.4,
+  jumpApex: 1.2,
   minDoorWidth: 1.4,
-  interactRadius: 2,
+  interactRadius: 2.4,
 });
 
 /**
  * Player controller tuning. Speeds are in units per second. The running clip
- * carries root motion of 4.6 units/s at world scale, which sets the run speed.
- * The walking clip has none; measured by paw travel per second it is ~0.46× the
- * run, so it plays at normal speed at ~2 units/s. Playback speed follows the
- * actual speed around those values.
+ * carries root motion of 13.1 model units per cycle: 7.75 units/s at the
+ * cat's world scale, where the run clip plays at normal speed. The walking clip
+ * has none; by paw travel per second it is ~0.46× the run, ~3.4 units/s.
+ * Playback speed follows the actual speed, so the chosen speeds (a little below
+ * those) play the clips at ~0.85–0.9×.
  */
 export const CAT_PLAYER = Object.freeze({
   /** Physics runs at a fixed 60 Hz; rendering interpolates between steps. */
   fixedStep: 1 / 60,
   maxSubSteps: 5,
-  walkSpeed: 1.9,
+  walkSpeed: 2.9,
   /** Ground speed the walking clip's stride matches at normal playback speed. */
-  walkClipSpeed: 2.0,
-  runSpeed: 4.6,
-  backSpeed: 0.9,
+  walkClipSpeed: 3.4,
+  runSpeed: 7.0,
+  backSpeed: 1.3,
   /** Exponential approach rate towards the target speed (1/s). */
   acceleration: 9,
   deceleration: 12,
@@ -65,12 +73,13 @@ export const CAT_PLAYER = Object.freeze({
   /** Turn rate used when facing an object before interacting. */
   faceSpeed: 6,
   gravity: 20,
-  jumpVelocity: 6,
+  /** √(2 · gravity · jumpApex) ≈ 6.9. */
+  jumpVelocity: 7,
   /** Grace periods that make jumping feel forgiving. */
   coyoteTime: 0.1,
   jumpBuffer: 0.12,
   /** How far inside a box footprint the centre must be before it stands on it. */
-  supportMargin: 0.2,
+  supportMargin: 0.25,
   /** Lower than this and the cat respawns at the spawn point. */
   fallLimit: -5,
 });
@@ -81,20 +90,22 @@ export const CAT_PLAYER = Object.freeze({
  * is shorter and lower, looking further ahead to keep the path in view.
  */
 export const CAT_CAMERA = Object.freeze({
-  distance: 5.2,
-  height: 3.2,
+  distance: 6.6,
+  height: 4.0,
+  /** The boom starts here above the cat's feet (about its shoulders). */
+  pivotHeight: 1.2,
   /** Look-at point: above the cat and ahead of it. */
-  lookHeight: 0.7,
-  lookAhead: 2.2,
+  lookHeight: 1.1,
+  lookAhead: 2.8,
   /** Smoothing rates (1/s): position, heading, and pulling in on collision. */
   followRate: 6,
   yawRate: 3.2,
   collisionRate: 18,
   /** Keep this far in front of a wall the camera would otherwise enter. */
   collisionPadding: 0.35,
-  minDistance: 1.6,
+  minDistance: 2.2,
   /** Never closer to the ground than this. */
-  groundClearance: 0.6,
+  groundClearance: 0.7,
   /** Seconds to blend from the dev camera into the follow position. */
   blendTime: 0.9,
 });

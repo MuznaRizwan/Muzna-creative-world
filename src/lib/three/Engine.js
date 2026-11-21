@@ -212,6 +212,7 @@ export class Engine {
       settings: {
         ...CAT_PLAYER,
         radius: CAT_METRICS.collisionRadius,
+        bodyOffset: CAT_METRICS.bodyOffset,
         height: CAT_METRICS.height,
         stepHeight: CAT_METRICS.stepHeight,
       },
@@ -220,6 +221,7 @@ export class Engine {
       spawn: world.getSpawn(),
       walkClipSpeed: CAT_PLAYER.walkClipSpeed,
       runClipSpeed,
+      shadowSize: { width: CAT_METRICS.width * 1.9, length: CAT_METRICS.length * 1.25 },
     });
     this.scene.add(this.player.group);
     this.followCamera = new FollowCamera(this.devCamera.camera, collision, CAT_CAMERA);
@@ -365,10 +367,12 @@ export class Engine {
     if (!player) return;
     this.setMode("dev");
     const { x, y, z, yaw } = player.view;
-    const target = new THREE.Vector3(x, y + 0.45, z);
+    const h = CAT_METRICS.height;
+    const target = new THREE.Vector3(x, y + h * 0.45, z);
     // In front of the cat and a little to its side, at about eye height.
     const angle = yaw + 0.6;
-    const position = new THREE.Vector3(x + Math.sin(angle) * 2.2, y + 0.9, z + Math.cos(angle) * 2.2);
+    const distance = h * 2.3;
+    const position = new THREE.Vector3(x + Math.sin(angle) * distance, y + h * 0.9, z + Math.cos(angle) * distance);
     this.devCamera.flyTo(position, target);
   }
 

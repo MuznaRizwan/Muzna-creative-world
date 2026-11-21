@@ -27,6 +27,7 @@ import { createCanvasTexture } from "../utils/canvasTexture";
  * @property {{ x: number, z: number, yaw: number }} spawn
  * @property {number} walkClipSpeed  Ground speed that matches the walk clip at timeScale 1.
  * @property {number} runClipSpeed   Ground speed that matches the run clip at timeScale 1.
+ * @property {{ width: number, length: number }} shadowSize  Blob shadow footprint.
  */
 
 /** Soft round shadow drawn on the ground under the cat. */
@@ -58,7 +59,7 @@ function createBlobShadow(/** @type {import("../utils/ResourceTracker").Resource
 
 export class CatPlayer {
   /** @param {CatPlayerOptions} options */
-  constructor({ model, animator, collision, settings, interactions, tracker, spawn, walkClipSpeed, runClipSpeed }) {
+  constructor({ model, animator, collision, settings, interactions, tracker, spawn, walkClipSpeed, runClipSpeed, shadowSize }) {
     this.model = model;
     this.animator = animator;
     this.collision = collision;
@@ -67,6 +68,7 @@ export class CatPlayer {
     this.spawn = spawn;
     this.walkClipSpeed = walkClipSpeed;
     this.runClipSpeed = runClipSpeed;
+    this.shadowSize = shadowSize;
 
     this.body = new CharacterController(collision, settings);
     this.body.teleport(spawn.x, spawn.z, spawn.yaw);
@@ -206,10 +208,11 @@ export class CatPlayer {
     // Blob shadow stays on the ground below and fades with height.
     const ground = this.collision.groundAt(view.x, view.z, this.visualY + 0.05, this.settings.supportMargin);
     const height = Math.max(0, this.visualY - ground);
-    const fade = Math.max(0, 1 - height / 2.5);
+    const fade = Math.max(0, 1 - height / 3);
     this.shadow.position.set(view.x + Math.sin(view.yaw) * 0.05, ground + 0.07, view.z + Math.cos(view.yaw) * 0.05);
     this.shadow.rotation.y = view.yaw;
-    this.shadow.scale.set(0.75 * (0.6 + 0.4 * fade), 1, 1.45 * (0.6 + 0.4 * fade));
+    const shrink = 0.6 + 0.4 * fade;
+    this.shadow.scale.set(this.shadowSize.width * shrink, 1, this.shadowSize.length * shrink);
     /** @type {THREE.MeshBasicMaterial} */ (this.shadow.material).opacity = fade;
   }
 

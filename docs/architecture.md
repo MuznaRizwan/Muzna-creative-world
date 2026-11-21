@@ -98,15 +98,17 @@ step; rendering interpolates between steps.
 
 - Ground height is the walking surface (terrace + paving/path lift), raised by the top of
   any collider box the cat stands on, or a walkway deck (the pier). No mesh raycasts.
-  Steps of up to 0.35 units are climbed automatically; higher ledges need a jump.
-- Gravity and jump are integrated by hand (gravity 20, jump velocity 6, apex 0.9), with a
+  Steps of up to 0.4 units are climbed automatically; higher ledges need a jump.
+- Gravity and jump are integrated by hand (gravity 20, jump velocity 7, apex ≈1.2), with a
   short coyote time and jump buffer.
-- The cat is a vertical cylinder (radius 0.4, height 1) pushed out of axis-aligned boxes
-  (circle vs box), which gives sliding along walls. A uniform grid keeps queries local.
+- The cat (1.6 tall, 2.3 long) is two vertical cylinders along its spine (radius 0.42,
+  ±0.5 from the centre), each pushed out of axis-aligned boxes (circle vs box). That
+  gives sliding along walls and keeps the nose out of them. A uniform grid keeps
+  queries local. All of these values live in `CAT_METRICS` / `CAT_PLAYER`.
 - The walkable boundary sits just inside the island wall; leaving it projects the cat
   back onto the edge, so it slides along the wall and cannot jump over it.
 - Movement is tank-style: W/S along the facing direction, A/D turn with a little inertia.
-- Interaction targets are points within 2 units, preferring ones the cat faces.
+- Interaction targets are points within 2.4 units, preferring ones the cat faces.
 
 ## Assets
 

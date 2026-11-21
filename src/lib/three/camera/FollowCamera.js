@@ -14,7 +14,7 @@ import * as THREE from "three";
 
 /**
  * @typedef {object} FollowSettings
- * @property {number} distance @property {number} height
+ * @property {number} distance @property {number} height @property {number} pivotHeight
  * @property {number} lookHeight @property {number} lookAhead
  * @property {number} followRate @property {number} yawRate @property {number} collisionRate
  * @property {number} collisionPadding @property {number} minDistance @property {number} groundClearance
@@ -89,9 +89,9 @@ export class FollowCamera {
     const length = Math.hypot(s.distance, s.height);
 
     // Boom from a pivot above the cat towards the ideal camera position.
-    this.pivot.set(target.x, target.y + 0.8, target.z);
-    this.direction.set((backX * horizontal) / length, (s.height - 0.8) / length, (backZ * horizontal) / length).normalize();
-    const full = Math.hypot(horizontal, s.height - 0.8);
+    this.pivot.set(target.x, target.y + s.pivotHeight, target.z);
+    this.direction.set((backX * horizontal) / length, (s.height - s.pivotHeight) / length, (backZ * horizontal) / length).normalize();
+    const full = Math.hypot(horizontal, s.height - s.pivotHeight);
     const hit = this.collision.raycast(this.pivot, this.direction, full, 1.4, 0.9);
     const allowed = Number.isFinite(hit) ? Math.max(s.minDistance, hit - s.collisionPadding) : full;
     const rate = allowed < this.boom ? s.collisionRate : s.followRate * 0.5;

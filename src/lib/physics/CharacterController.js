@@ -1,8 +1,9 @@
 /**
  * Kinematic character controller for the cat (plain maths, fixed timestep).
  *
- * The body is a vertical cylinder: a circle in plan (collision radius) with a
- * height. Each step it turns, moves along its facing direction, is pushed out
+ * The body is two vertical cylinders along the spine (front and back circles
+ * in plan, ±bodyOffset from the centre) with a height, so a long cat doesn't
+ * poke its nose into walls. Each step it turns, moves along its facing direction, is pushed out
  * of collider boxes, kept inside the walkable boundary, and then follows the
  * ground: stepping up or down small ledges, or falling under gravity.
  *
@@ -20,7 +21,7 @@
 
 /**
  * @typedef {object} ControllerSettings
- * @property {number} radius @property {number} height @property {number} stepHeight
+ * @property {number} radius @property {number} bodyOffset @property {number} height @property {number} stepHeight
  * @property {number} walkSpeed @property {number} runSpeed @property {number} backSpeed
  * @property {number} acceleration @property {number} deceleration
  * @property {number} turnSpeed @property {number} runTurnSpeed @property {number} turnAcceleration
@@ -75,6 +76,32 @@ export class CharacterController {
     this.jumps = 0;
     this.landings = 0;
     this.lastFall = 0;
+    this.probe = { x: 0, z: 0 };
+  }
+
+  /** Radius of a circle that contains the whole body, whatever its heading. */
+  get outerRadius() {
+    return this.settings.radius + this.settings.bodyOffset;
+  }
+
+  /**
+   * Push the body (front and back circles) out of collider boxes.
+   * @param {number} tolerance  Boxes this far above the feet can be stepped onto.
+   */
+  resolveBody(tolerance) {
+    const s = this.settings;
+    const fx = Math.sin(this.yaw);
+    const fz = Math.cos(this.yaw);
+    for (const offset of [s.bodyOffset, -s.bodyOffset]) {
+      const probe = this.probe;
+      probe.x = this.position.x + fx * offset;
+      probe.z = this.position.z + fz * offset;
+      const startX = probe.x;
+      const startZ = probe.z;
+      this.collision.resolveCircle(probe, s.radius, this.position.y, s.height, tolerance);
+      this.position.x += probe.x - startX;
+      this.position.z += probe.z - startZ;
+    }
   }
 
   /**
@@ -82,8 +109,8 @@ export class CharacterController {
    * @param {number} x @param {number} z @param {number} yaw
    */
   teleport(x, z, yaw) {
-    const { radius, height, stepHeight } = this.settings;
-    const spot = this.collision.findFreeSpot(x, z, radius, height, stepHeight);
+    const { height, stepHeight } = this.settings;
+    const spot = this.collision.findFreeSpot(x, z, this.outerRadius, height, stepHeight);
     const ground = this.collision.groundAt(spot.x, spot.z, this.collision.heightAt(spot.x, spot.z) + stepHeight, this.settings.supportMargin);
     this.position.x = spot.x;
     this.position.y = ground;
@@ -149,10 +176,11 @@ export class CharacterController {
     // While airborne only boxes clearly below the feet are ignored, so jumps
     // can't clip through edges; on the ground small ledges are stepped onto.
     const tolerance = this.grounded ? s.stepHeight : 0.08;
-    this.collision.resolveCircle(this.position, s.radius, this.position.y, s.height, tolerance);
-    this.collision.constrain(this.position, from, s.radius);
+    this.resolveBody(tolerance);
+    // The boundary keeps the whole body (nose and tail) inside the wall.
+    this.collision.constrain(this.position, from, s.radius + s.bodyOffset * 0.7);
     // Collision resolution can push sideways into another box; resolve once more.
-    this.collision.resolveCircle(this.position, s.radius, this.position.y, s.height, tolerance);
+    this.resolveBody(tolerance);
     this.actualSpeed = Math.hypot(this.position.x - from.x, this.position.z - from.z) / dt;
 
     // Jump input is buffered briefly so a press just before landing still counts.

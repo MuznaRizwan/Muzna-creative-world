@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+import { CAT_METRICS } from "@/constants/world";
+
 /**
  * Loads and prepares Muzna's cat (`Cat.glb`) for the world.
  *
@@ -18,12 +20,12 @@ import * as THREE from "three";
  *   cat interacts with real objects.)
  *
  * Materials, textures and proportions are left untouched; the model is only
- * scaled uniformly so the ear tips stand at CAT_MODEL.height.
+ * scaled uniformly so the ear tips stand at CAT_METRICS.height.
  */
 
 export const CAT_MODEL = Object.freeze({
   /** Target height of the ear tips in world units (the model is 2.7 tall in Blender). */
-  height: 0.95,
+  height: CAT_METRICS.height,
   /** The model faces +Z, which matches yaw 0 of the character controller. */
   facingOffset: 0,
   /** Small lift so the paws rest on paving rather than inside it. */

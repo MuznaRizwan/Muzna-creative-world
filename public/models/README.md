@@ -26,7 +26,8 @@ How the engine prepares `Cat.glb` (`src/lib/three/avatar/CatModel.js`):
   so they follow the spine.
 - It hides `Cube.001`, the box the cat taps in the interaction animation. In the world, the
   cat interacts with real objects instead.
-- It scales the model uniformly so the ear tips are 0.95 units high. The model faces +Z.
+- It scales the model uniformly so the ear tips are `CAT_METRICS.height` (1.6) units high.
+  The model faces +Z.
 
 ### Notes for future exports
 

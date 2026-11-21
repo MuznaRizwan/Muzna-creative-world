@@ -66,6 +66,12 @@ export function DevPanel({ engine, mode }) {
 
       <details
         open={open}
+        // Clicking a control leaves it focused, and Space (jump) would then
+        // press it again. Pointer clicks give focus back to the page.
+        onPointerUp={() => {
+          const active = document.activeElement;
+          if (active instanceof HTMLElement && active !== document.body) active.blur();
+        }}
         onToggle={(event) => setOpen(event.currentTarget.open)}
         className="absolute bottom-0 left-0 m-3 mb-[max(0.75rem,env(safe-area-inset-bottom))] w-[min(18rem,calc(100%-1.5rem))] rounded-lg border border-line bg-glass/85 backdrop-blur"
       >
