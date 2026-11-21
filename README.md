@@ -5,18 +5,20 @@ NED University of Engineering and Technology). Visitors explore a small island t
 cat; each location opens a part of the portfolio. A conventional menu gives direct access
 to the same content.
 
-> **Status:** Phase 3, project foundation. The homepage is a temporary placeholder.
+> **Status:** project foundation (JavaScript, vanilla Three.js). The homepage is a temporary
+> placeholder; the 3D world starts in Phase 4.
 
 ## Tech stack
 
 | Area | Technology |
 |---|---|
-| Framework | Next.js 16 (App Router, `src/` directory), React 19, TypeScript |
+| Framework | Next.js 16 (App Router, `src/` directory), React 19, JavaScript (.js/.jsx) |
 | Styling | Tailwind CSS 4 |
 | UI animation | Framer Motion |
-| 3D | Three.js, React Three Fiber, Drei |
-| Physics | Rapier (`@react-three/rapier`) |
-| Backend | Next.js route handlers, Supabase (pgvector), Resend |
+| 3D | Vanilla Three.js |
+| Physics | Custom lightweight physics (ground checks, basic collision detection) |
+| Backend | Next.js route handlers, Supabase PostgreSQL + pgvector, LLM and embeddings, Resend |
+| Hosting | Vercel |
 | Assets | Blender (cat, props), Adobe After Effects (promo video) |
 
 ## Getting started
@@ -34,38 +36,31 @@ npm run dev                  # http://localhost:3000
 | `npm run dev` | Development server |
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
-| `npm run lint` | ESLint (Next.js core-web-vitals + TypeScript rules) |
-| `npm run type-check` | TypeScript check without emitting |
+| `npm run lint` | ESLint (Next.js core-web-vitals rules) |
+
+Imports use the `@/` alias for `src/` (configured in `jsconfig.json`).
 
 ## Project structure
 
 ```text
 src/
-├── app/                 Routes, root layout, fonts, global CSS, loading/error/404, API routes
-│   └── api/             chat, contact, ingest (stubs until their phases)
-├── components/
-│   ├── world/           3D: canvas, scene, zones/, props/, atmosphere/, triggers/
-│   ├── avatar/          3D: cat model, controller, animations
-│   ├── camera/          3D: follow camera, transitions
-│   ├── physics/         3D: Rapier wrapper, collider helpers
-│   ├── overlays/        HTML: HUD and portfolio panels/
-│   ├── navigation/      HTML: navbar, mobile controls, key hints
-│   ├── chatbot/         HTML: chatbot drawer
-│   ├── layout/          HTML: page shell for ordinary pages
-│   └── ui/              HTML: reusable primitives
-├── data/                Portfolio content and chatbot knowledge base (single source of truth)
-├── hooks/               Custom React hooks
-├── lib/                 constants, utils/, supabase/, email/, ai/
-└── types/               Shared TypeScript types
-public/
-├── models/              Blender exports (muzna-cat.glb goes here)
-├── textures/  videos/  images/  audio/
-art-source/              Blender and After Effects working files (git-ignored, not served)
-supabase/migrations/     pgvector schema
-archive/                 Superseded prototype code, kept for reference; not built or linted
+├── app/            Routes, root layout, fonts, global CSS, loading/error/404 pages
+│   └── api/        chat, contact, ingest (stubs until their phases)
+├── components/     React components only: ui/, layout/, chatbot/ (world/, overlays/, … to come)
+├── lib/            supabase/, email/ (three/, physics/, state/, ai/ to come)
+├── data/           Portfolio content and chatbot knowledge base
+├── constants/      Site identity, asset paths
+├── types/          JSDoc type definitions
+└── utils/          Small helpers (cn)
+public/             models/, textures/, videos/, images/, audio/
+art-source/         Blender and After Effects working files (git-ignored, not served)
+supabase/           pgvector migration
+docs/               architecture.md
+archive/            Superseded prototype code, kept for reference; not built or linted
 ```
 
-See `src/components/README.md` for the rule that keeps 3D and HTML components apart.
+The full planned structure, the engine/React boundary and the physics approach are
+described in [docs/architecture.md](docs/architecture.md).
 
 ## External assets
 

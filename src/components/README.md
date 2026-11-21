@@ -1,30 +1,26 @@
 # Components
 
-Components are split by the layer they render into. 3D code never imports from the
-HTML layers, and HTML components never import Three.js objects directly.
+`components/` holds **React components only**. The 3D world is not built from React
+components: it is a vanilla Three.js engine in `src/lib/three/`, and React only mounts
+its canvas and draws the interface around it.
 
-## 3D world layer (rendered inside the React Three Fiber `<Canvas>`)
+| Folder | Purpose | Status |
+|---|---|---|
+| `ui/` | Reusable primitives (Button, Icons, …) | Exists |
+| `layout/` | Page shell (header, main, footer) for ordinary pages | Exists |
+| `chatbot/` | RAG chatbot drawer | Exists (UI stub) |
+| `world/` | Client-only mount for the Three.js canvas (`WorldCanvas.jsx`) | Phase 4 |
+| `overlays/` | HUD over the canvas: loading screen, location label, interaction prompt, minimap | Planned |
+| `navigation/` | Navbar, mobile joystick, keyboard hints | Planned |
+| `portfolio/` | Portfolio panels: About, Skills, Projects, Education, Video | Planned |
+| `contact/` | Contact panel and form | Planned |
 
-| Folder | Purpose |
-|---|---|
-| `world/` | Canvas root, scene composition |
-| `world/zones/` | One self-contained component per portfolio location |
-| `world/props/` | Ground, signposts, billboards, boundaries, interactive props |
-| `world/atmosphere/` | Lighting, sky, fog, particles |
-| `world/triggers/` | Zone and interaction sensors |
-| `avatar/` | Cat model loading, controller and animation state machine |
-| `camera/` | Third-person follow camera and scripted transitions |
-| `physics/` | Rapier world wrapper and collider helpers |
+Folders marked *Planned* are created when their first component is written.
 
-All 3D components are client components and are loaded without SSR.
+## Rules
 
-## HTML layer (DOM over the canvas, or ordinary pages)
-
-| Folder | Purpose |
-|---|---|
-| `overlays/` | HUD: location label, interaction prompt, minimap, loading screen |
-| `overlays/panels/` | Portfolio panels (About, Skills, Projects, Education, Video, Contact) |
-| `navigation/` | Navbar, mobile controls, keyboard hints |
-| `chatbot/` | RAG chatbot drawer |
-| `layout/` | Page shell for ordinary (non-3D) pages |
-| `ui/` | Reusable primitives (Button, Icons, …) |
+- Never import `three` or anything from `src/lib/three/` into a component other than
+  `world/`. Overlays read game state through `src/lib/state/` and its hook instead.
+- The canvas mount must be a client component that loads the engine with
+  `next/dynamic(..., { ssr: false })`; Three.js needs the browser.
+- Per-frame values (cat position, velocity) never go through React state.
