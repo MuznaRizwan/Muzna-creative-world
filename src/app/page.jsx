@@ -1,20 +1,7 @@
-import { PageShell } from "@/components/layout/PageShell";
-import { SITE } from "@/constants/site";
+import { WorldCanvas } from "@/components/world/WorldCanvas";
+import { WorldFallback } from "@/components/world/WorldFallback";
 
-/** Temporary placeholder until the 3D world is mounted here (Phase 4+). */
+/** Home: the 3D environment preview (Phase 4). Without WebGL, the placeholder page is shown. */
 export default function HomePage() {
-  return (
-    <PageShell>
-      <section aria-labelledby="home-title" className="max-w-2xl space-y-5">
-        <p className="font-mono text-xs uppercase tracking-[0.14em] text-lamp">Under construction</p>
-        <h1 id="home-title" className="font-display text-4xl font-bold tracking-tight text-balance sm:text-5xl">
-          {SITE.name}
-        </h1>
-        <p className="text-lg leading-relaxed text-muted">
-          An interactive 3D portfolio by {SITE.owner}. The explorable world is being built; this
-          page is a temporary placeholder.
-        </p>
-      </section>
-    </PageShell>
-  );
+  return <WorldCanvas fallback={<WorldFallback />} />;
 }

@@ -9,7 +9,7 @@ its canvas and draws the interface around it.
 | `ui/` | Reusable primitives (Button, Icons, …) | Exists |
 | `layout/` | Page shell (header, main, footer) for ordinary pages | Exists |
 | `chatbot/` | RAG chatbot drawer | Exists (UI stub) |
-| `world/` | Client-only mount for the Three.js canvas (`WorldCanvas.jsx`) | Phase 4 |
+| `world/` | Client-only mount for the Three.js engine (`WorldCanvas.jsx`), loading/error states, temporary dev panel, no-WebGL fallback | Exists |
 | `overlays/` | HUD over the canvas: loading screen, location label, interaction prompt, minimap | Planned |
 | `navigation/` | Navbar, mobile joystick, keyboard hints | Planned |
 | `portfolio/` | Portfolio panels: About, Skills, Projects, Education, Video | Planned |
