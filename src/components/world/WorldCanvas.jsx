@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { InteractionPrompt } from "@/components/overlays/InteractionPrompt";
+
 import { DevPanel } from "./DevPanel";
 import { WorldError, WorldLoading } from "./WorldStatus";
 
@@ -19,6 +21,9 @@ export function WorldCanvas({ fallback }) {
   const [progress, setProgress] = useState(0);
   const [engine, setEngine] = useState(/** @type {import("@/lib/three/Engine").Engine | null} */ (null));
   const [errorMessage, setErrorMessage] = useState("");
+  // Updated only when they change (never per frame).
+  const [focus, setFocus] = useState(/** @type {import("@/lib/three/Engine").Interactable | null} */ (null));
+  const [mode, setMode] = useState(/** @type {import("@/lib/three/Engine").CameraMode} */ ("dev"));
 
   useEffect(() => {
     const container = containerRef.current;
@@ -50,6 +55,12 @@ export function WorldCanvas({ fallback }) {
             if (!cancelled) setProgress(ratio);
           },
           onError: fail,
+          onFocusChange: (target) => {
+            if (!cancelled) setFocus(target);
+          },
+          onModeChange: (next) => {
+            if (!cancelled) setMode(next);
+          },
         });
         const ready = await instance.init();
         if (cancelled || !ready) return;
@@ -80,7 +91,8 @@ export function WorldCanvas({ fallback }) {
       <div ref={containerRef} className="absolute inset-0" />
       {status === "loading" && <WorldLoading progress={progress} />}
       {status === "error" && <WorldError message={errorMessage} />}
-      {status === "ready" && engine && <DevPanel engine={engine} />}
+      {status === "ready" && engine && <DevPanel engine={engine} mode={mode} />}
+      {status === "ready" && mode === "follow" && <InteractionPrompt target={focus} />}
     </div>
   );
 }

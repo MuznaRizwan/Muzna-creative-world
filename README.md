@@ -46,8 +46,8 @@ Imports use the `@/` alias for `src/` (configured in `jsconfig.json`).
 src/
 ├── app/            Routes, root layout, fonts, global CSS, loading/error/404 pages
 │   └── api/        chat, contact, ingest (stubs until their phases)
-├── components/     React components only: ui/, layout/, chatbot/ (world/, overlays/, … to come)
-├── lib/            supabase/, email/ (three/, physics/, state/, ai/ to come)
+├── components/     React components only: ui/, layout/, chatbot/, world/, overlays/
+├── lib/            three/ (engine), physics/, supabase/, email/ (state/, ai/ to come)
 ├── data/           Portfolio content and chatbot knowledge base
 ├── constants/      Site identity, asset paths
 ├── types/          JSDoc type definitions
@@ -64,6 +64,6 @@ described in [docs/architecture.md](docs/architecture.md).
 
 ## External assets
 
-- **Cat avatar:** export from Blender to `public/models/muzna-cat.glb`. Requirements are in
-  `public/models/README.md`.
+- **Cat avatar:** `public/models/Cat Muzna/Cat Muzna/`: the base model `Cat.glb` and one GLB
+  per animation (idle, walking, running, general interaction). See `public/models/README.md`.
 - **Promotional video:** export from After Effects to `public/videos/portfolio-intro.mp4`.

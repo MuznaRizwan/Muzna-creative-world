@@ -59,6 +59,15 @@ export function buildCinema(ctx) {
     ]) {
       const geometry = kit.geometry(`tier:${i}:${a.toFixed(2)}`, () => tierGeometry(inner, outer, a, b, height));
       group.add(kit.mesh(geometry, colour, { x: centre.x, y: y0, z: centre.z }));
+      // Collision: the curved tier as a run of small boxes (each tier is a
+      // 0.3 step, so the cat can climb the seating). Shape angle θ maps to
+      // world (cos θ, −sin θ).
+      const mid = (inner + outer) / 2;
+      const count = Math.ceil(((b - a) * mid) / 0.55);
+      for (let k = 0; k <= count; k += 1) {
+        const ang = a + ((b - a) * k) / count;
+        ctx.collider(centre.x + Math.cos(ang) * mid, centre.z - Math.sin(ang) * mid, 0.8, 0.8, y0 + height);
+      }
     }
     // Cushions on each tier.
     for (let k = 0; k < 7; k += 1) {

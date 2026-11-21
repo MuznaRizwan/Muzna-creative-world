@@ -106,12 +106,13 @@ export function buildUniversityCampus(ctx) {
     const z = -1.6 - i * 0.2;
     kit.block(group, { w: book.w, h: 0.3, d: book.d, mat: kit.colour(book.colour), x, y: y0 + i * 0.3, z });
     kit.block(group, { w: book.w + 0.02, h: 0.22, d: book.d - 0.1, mat: kit.material("paper"), x: x + 0.02, y: y0 + i * 0.3 + 0.04, z: z + 0.03, cast: false });
+    // One collider per book, so each 0.3 step can be climbed.
+    ctx.collider(x, z, book.w, book.d, y0 + (i + 1) * 0.3);
   });
   const terrace = { x: 4.3, z: -2.4 };
   kit.block(group, { w: 2.2, h: 0.9, d: 2.6, mat: honey, x: terrace.x, y: y0, z: terrace.z });
   bench(kit, group, terrace.x + 0.3, terrace.z - 0.6, 0).position.y = 0.9;
-  ctx.collider(terrace.x, terrace.z, 2.2, 2.6, 0.9);
-  ctx.collider(2.3, -1.8, 2.6, 1.3, 0.6);
+  ctx.collider(terrace.x, terrace.z, 2.2, 2.6, y0 + 0.9);
 
   // Notice board: the campus interaction point.
   noticeBoard(kit, group, 4.4, 4.4, -0.5);

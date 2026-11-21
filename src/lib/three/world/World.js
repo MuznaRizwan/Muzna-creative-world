@@ -1,14 +1,15 @@
 import * as THREE from "three";
 
 import { PALETTE, WORLD } from "@/constants/world";
-import { SIGNPOSTS, ZONE_BY_ID, ZONES } from "@/data/worldLayout";
+import { PATHS, SIGNPOSTS, ZONE_BY_ID, ZONES } from "@/data/worldLayout";
+import { CollisionWorld } from "@/lib/physics/CollisionWorld";
 
 import { batchStaticMeshes } from "../utils/staticBatch";
 import { createDebugLayer } from "./debug";
 import { createBoundary } from "./environment/Boundary";
 import { createGround } from "./environment/Ground";
 import { createLighting } from "./environment/Lighting";
-import { createPaths, samplePaths } from "./environment/Paths";
+import { createPaths, isInZone, samplePaths } from "./environment/Paths";
 import { createSky } from "./environment/Sky";
 import { createLavenderField, createVegetation } from "./environment/Vegetation";
 import { createWater } from "./environment/Water";
@@ -17,7 +18,7 @@ import { createKit } from "./kit";
 import { LOCATION_BUILDERS } from "./locations";
 import { PAVING_TOP } from "./locations/common";
 import { createSignpost } from "./props/signage";
-import { heightAt } from "./terrain";
+import { heightAt, isOnIsland, islandRadius } from "./terrain";
 import { createTextures } from "./textures";
 
 /** @typedef {import("./debug").Collider} Collider */
@@ -29,6 +30,41 @@ import { createTextures } from "./textures";
  * @property {string} label
  * @property {number} x @property {number} y @property {number} z
  */
+
+/** Height of path ribbons above the terrace they lie on (see Paths.js). */
+const PATH_LIFT = 0.035;
+const SURFACE_CELL = 0.5;
+
+/**
+ * Walking-surface height: the terrace, plus the paving inside locations or the
+ * path ribbon along paths, so the cat's paws rest on what is drawn.
+ * @param {ReturnType<typeof samplePaths>} sampled
+ * @returns {(x: number, z: number) => number}
+ */
+function createSurfaceSampler(sampled) {
+  /** @type {Set<number>} */
+  const pathCells = new Set();
+  const key = (/** @type {number} */ i, /** @type {number} */ j) => (i + 2048) * 4096 + (j + 2048);
+  for (const path of sampled) {
+    const half = path.width / 2 - 0.1;
+    for (const p of path.samples) {
+      const steps = Math.ceil(half / SURFACE_CELL);
+      for (let a = -steps; a <= steps; a += 1) {
+        for (let b = -steps; b <= steps; b += 1) {
+          const x = p.x + a * SURFACE_CELL;
+          const z = p.z + b * SURFACE_CELL;
+          if (Math.hypot(x - p.x, z - p.z) <= half) pathCells.add(key(Math.round(x / SURFACE_CELL), Math.round(z / SURFACE_CELL)));
+        }
+      }
+    }
+  }
+  return (x, z) => {
+    const ground = heightAt(x, z);
+    if (isInZone(x, z, -0.1)) return ground + PAVING_TOP;
+    if (pathCells.has(key(Math.round(x / SURFACE_CELL), Math.round(z / SURFACE_CELL)))) return ground + PATH_LIFT;
+    return ground;
+  };
+}
 
 /**
  * Assembles the whole environment: atmosphere, terrain, paths, the eight
@@ -53,6 +89,10 @@ export class World {
     this.colliders = [];
     /** @type {Interactable[]} */
     this.interactables = [];
+    /** @type {import("@/lib/physics/CollisionWorld").Walkway[]} */
+    this.walkways = [];
+    /** @type {(x: number, z: number) => number} */
+    this.surfaceAt = heightAt;
     /** @type {((delta: number, elapsed: number) => void)[]} */
     this.updaters = [];
     /** @type {THREE.Mesh | null} */
@@ -111,6 +151,7 @@ export class World {
 
     // 2. Paths, steps, lamps and the boundary wall (with a gap for the pier).
     const sampled = samplePaths();
+    this.surfaceAt = createSurfaceSampler(sampled);
     const paths = createPaths(kit, instances, sampled, addCollider);
     batchStaticMeshes(paths, this.tracker);
     root.add(paths);
@@ -188,6 +229,8 @@ export class World {
       interactable: ({ id, label, x, y, z }) =>
         this.interactables.push({ id, zoneId: zone.id, label, x: origin.x + x, y: origin.y + y, z: origin.z + z }),
       animate: (update) => this.updaters.push(update),
+      walkway: ({ x, z, angle, length, width, y }) =>
+        this.walkways.push({ x: origin.x + x, z: origin.z + z, angle, length, width, y: origin.y + y }),
     };
 
     builder(ctx, zone.id === "contact" ? { pierAngle: WORLD.headlandAngle } : undefined);
@@ -244,6 +287,58 @@ export class World {
 
   getOverview() {
     return { position: new THREE.Vector3(0, 62, 78), target: new THREE.Vector3(0, 0, -2) };
+  }
+
+  /**
+   * Collision data for the custom physics: collider boxes, the walking
+   * surface, the boundary just inside the wall, and the pier.
+   */
+  createCollisionWorld() {
+    // The wall stands wallInset inside the grass edge and is ~0.6 deep.
+    const wall = WORLD.wallInset + 0.45;
+    return new CollisionWorld({
+      colliders: this.colliders,
+      heightAt: this.surfaceAt,
+      isInside: (x, z, margin) => isOnIsland(x, z, wall + margin),
+      nearestInside: (x, z, margin) => {
+        const angle = Math.atan2(z, x);
+        const r = islandRadius(angle) - wall - margin - 0.01;
+        return { x: Math.cos(angle) * r, z: Math.sin(angle) * r };
+      },
+      walkways: this.walkways,
+    });
+  }
+
+  /** Where the cat starts: the plaza, facing north up the boulevard. */
+  getSpawn() {
+    return { x: WORLD.spawn.x, z: WORLD.spawn.z, yaw: Math.PI };
+  }
+
+  /**
+   * Where the cat arrives when sent to a location: the end of the path a
+   * visitor would come in by (near the location, on the side towards the
+   * plaza), facing the centre. The plaza uses the spawn point.
+   * @param {string} zoneId
+   */
+  getArrival(zoneId) {
+    const zone = ZONE_BY_ID[zoneId];
+    if (!zone) return null;
+    if (zoneId === "plaza") return this.getSpawn();
+    const spawn = WORLD.spawn;
+    let best = { x: zone.x, z: zone.z + 4 };
+    let bestScore = Infinity;
+    for (const path of PATHS) {
+      for (const [x, z] of [path.points[0], path.points[path.points.length - 1]]) {
+        const near = Math.hypot(x - zone.x, z - zone.z);
+        if (near > 10) continue;
+        const score = near + 0.3 * Math.hypot(x - spawn.x, z - spawn.z);
+        if (score < bestScore) {
+          bestScore = score;
+          best = { x, z };
+        }
+      }
+    }
+    return { x: best.x, z: best.z, yaw: Math.atan2(zone.x - best.x, zone.z - best.z) };
   }
 
   /** Approved third-person framing (offset 0, 4.5, 6.5) at the spawn point, for previewing scale. */

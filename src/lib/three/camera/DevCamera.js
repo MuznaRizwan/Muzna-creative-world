@@ -14,7 +14,8 @@ export class DevCamera {
     this.controls = new OrbitControls(this.camera, domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.08;
-    this.controls.minDistance = 2.5;
+    // Close enough to inspect the cat (0.95 tall) up close.
+    this.controls.minDistance = 0.8;
     this.controls.maxDistance = 170;
     this.controls.maxPolarAngle = Math.PI * 0.48;
     this.controls.target.set(0, 0, -2);

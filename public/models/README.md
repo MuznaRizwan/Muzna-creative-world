@@ -1,21 +1,47 @@
 # 3D models (exported from Blender)
 
-Only final `.glb` exports belong here. Source `.blend` files go in `art-source/blender/`,
-which is outside the served `public/` folder.
+## The cat avatar
+
+`Cat Muzna/Cat Muzna/` holds Muzna's cat, exported with the Khronos glTF Blender I/O 5.1:
+
+| File | Used for | Clip used |
+|---|---|---|
+| `Cat.glb` | The model shown in the world (mesh, materials, textures, rig) | none (its action is a static pose) |
+| `Cat IDLE.glb` | Idle (3.1 s, loops) | `rigAction` |
+| `Cat Waliking.glb` | Walking (1.2 s, loops) | `rigAction` |
+| `Cat running.glb` | Running (1.0 s, loops; root motion removed) | `rigAction` |
+| `Cat General interaction.glb` | Interaction: look, sniff, paw tap (3.2 s, plays once) | `rigAction` |
+
+All five files share the same Rigify armature (`rig`, 765 bones): same bone names, hierarchy,
+rest pose and inverse bind matrices. So the clips bind to `Cat.glb` by bone name with no
+retargeting. Each animation file also contains its own copy of the cat. Those copies are not
+identical: the idle and walking files hold only half the mesh, and the running file holds a
+subdivided one. They are never shown and are discarded after their clips are extracted.
+
+How the engine prepares `Cat.glb` (`src/lib/three/avatar/CatModel.js`):
+
+- It removes `metarig`, an unused template armature, and about 275 empty `WGT-rig_*` widget
+  objects.
+- It re-parents the jacket trim discs (`Circle`, `Circle.005`, `Circle.006`) to the jacket,
+  so they follow the spine.
+- It hides `Cube.001`, the box the cat taps in the interaction animation. In the world, the
+  cat interacts with real objects instead.
+- It scales the model uniformly so the ear tips are 0.95 units high. The model faces +Z.
+
+### Notes for future exports
+
+- If the animations are re-exported, keep the armature action named `rigAction`, or adjust
+  `src/lib/three/avatar/catClips.js`.
+- Export animation files with *only* the armature action (no mesh) to cut download size.
+  At the moment each one carries a full copy of the cat, about 1.2–1.5 MB compressed.
+- The `.blend` source files sit next to the GLBs inside `public/`, so they would be served
+  and deployed. Moving them to `art-source/blender/` keeps them out of the site.
+
+## Other models
 
 | File | Status |
 |---|---|
-| `muzna-cat.glb` | Pending: the cat avatar, modelled, rigged and animated in Blender |
 | `props/*.glb` | Optional: zone decoration props |
 
-## Cat export requirements
-
-- glTF Binary (`.glb`), +Y up, 1 Blender unit = 1 Three.js unit
-- Cat faces Blender −Y (exports facing +Z); origin on the ground between the paws
-- Height to ear tips 0.9–1.0 units; at most 15k triangles; textures at most 2048²
-- In-place animations (no root motion) with NLA tracks named:
-  `Idle`, `Walk`, `Trot`, `Run`, `JumpStart`, `JumpAir`, `JumpLand`, `Interact`, `Sit`
-- Draco compression if the file exceeds 5 MB
-
-Do not place a stand-in model at `muzna-cat.glb`. The app will show a procedural
-placeholder cat until the real file exists.
+Only final `.glb` exports belong in `public/`. Source `.blend` files go in `art-source/blender/`.
+Use Draco compression if a file exceeds 5 MB.

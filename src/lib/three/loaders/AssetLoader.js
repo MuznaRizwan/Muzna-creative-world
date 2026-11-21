@@ -2,8 +2,8 @@ import * as THREE from "three";
 
 /**
  * Central asset loading with one LoadingManager, so every file request feeds
- * the same progress value. The environment is procedural for now; the cat GLB
- * (public/models/muzna-cat.glb) will load through `loadGLTF` in a later phase.
+ * the same progress value. The environment is procedural; the cat's GLB files
+ * (see CAT_ASSETS) load through `loadGLTF`.
  */
 export class AssetLoader {
   /** @param {(ratio: number) => void} [onProgress] */

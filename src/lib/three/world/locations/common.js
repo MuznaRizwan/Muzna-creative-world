@@ -14,6 +14,7 @@ import { createNameBoard } from "../props/signage";
  * @property {(x: number, z: number, w: number, d: number, h: number, y?: number) => void} collider  Register an axis-aligned collision box (local).
  * @property {(spec: { id: string, label: string, x: number, y: number, z: number }) => void} interactable  Mark a future interaction point (local).
  * @property {(update: (delta: number, elapsed: number) => void) => void} animate  Per-frame update for dynamic objects.
+ * @property {(spec: { x: number, z: number, angle: number, length: number, width: number, y: number }) => void} walkway  Walkable deck beyond the boundary (local start point, world angle).
  */
 
 /** Paving surface height above the terrace. */

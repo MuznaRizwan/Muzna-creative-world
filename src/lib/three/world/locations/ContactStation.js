@@ -93,6 +93,8 @@ export function buildContactStation(ctx, { pierAngle }) {
   pier.rotation.y = Math.atan2(outX, outZ);
   group.add(pier);
   const pierLength = 10;
+  // The deck is walkable: it extends the cat's walkable area through the wall gap.
+  ctx.walkway({ x: outX * 4.2, z: outZ * 4.2, angle: pierAngle, length: pierLength + 0.25, width: 2.2, y: y0 + 0.02 });
   for (let i = 0; i < pierLength / 0.32; i += 1) {
     kit.block(pier, { w: 2.2, h: 0.08, d: 0.27, mat: kit.material(i % 3 ? "timber" : "timberDark"), y: y0 - 0.06, z: 0.2 + i * 0.32 });
   }

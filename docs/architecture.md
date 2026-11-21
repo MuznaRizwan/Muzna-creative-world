@@ -46,22 +46,24 @@ src/
 │  └─ api/         chat/, contact/, ingest/ route handlers
 ├─ components/     React only (see src/components/README.md)
 │  ├─ ui/  layout/  chatbot/  world/ (WorldCanvas, status, dev panel, fallback)   exist
-│  └─ overlays/  navigation/  portfolio/  contact/                                planned
+│  ├─ overlays/    InteractionPrompt (exists); location label, minimap            planned
+│  └─ navigation/  portfolio/  contact/                                           planned
 ├─ lib/
 │  ├─ three/       vanilla Three.js engine, no React (Phase 4)
-│  │  ├─ Engine.js        renderer, scene, loop, resize, visibility pause, dispose
+│  │  ├─ Engine.js        renderer, scene, loop, resize, visibility pause, camera modes, dispose
 │  │  ├─ core/            Renderer, Time (delta clamp), Viewport (resize, pixel ratio), webgl check
-│  │  ├─ camera/          DevCamera (temporary orbit + fly-to); follow camera later
+│  │  ├─ camera/          DevCamera (temporary orbit + fly-to), FollowCamera (third person)
 │  │  ├─ loaders/         AssetLoader (LoadingManager, GLTF on demand)
+│  │  ├─ input/           KeyboardInput (held keys + one-shot actions)
 │  │  ├─ utils/           ResourceTracker, static batching, canvas textures, fonts, seeded random
 │  │  ├─ world/           World assembly, kit (shared materials/geometries), instancing, textures,
 │  │  │                   terrain, debug overlay
 │  │  │  ├─ environment/  ground, water, sky, lighting, paths, boundary wall, vegetation
 │  │  │  ├─ locations/    one module per location + shared helpers
 │  │  │  └─ props/        signage, furniture
-│  │  ├─ avatar/          planned: cat (GLB or procedural placeholder), animation state machine
-│  │  └─ interactions/    planned: zone triggers, interactables
-│  ├─ physics/     planned: colliders, ground height, character controller (plain math)
+│  │  ├─ avatar/          CatModel (GLB prep), catClips (clip extraction), CatAnimator, CatPlayer
+│  │  └─ interactions/    InteractionSystem (focus, E to interact, handlers per object/zone)
+│  ├─ physics/     CollisionWorld (boxes, ground, boundary, walkways, raycast), CharacterController
 │  ├─ state/       planned: engine ↔ React store
 │  ├─ ai/          planned: embeddings and RAG pipeline
 │  ├─ supabase/    server.js (service-role client)
@@ -91,19 +93,28 @@ supabase/          migrations/ (pgvector schema)
 
 ## Physics approach
 
-A kinematic character controller with a fixed 60 Hz step:
+A kinematic character controller (`src/lib/physics/`, plain maths) with a fixed 60 Hz
+step; rendering interpolates between steps.
 
-- Ground height comes from a list of axis-aligned platforms, not mesh raycasts. Steps of
-  up to 0.35 units are climbed automatically.
-- Gravity and jump are integrated by hand (gravity 20, jump velocity 6).
-- The cat is a circle (radius 0.4) resolved against axis-aligned boxes one axis at a time,
-  which gives sliding along walls.
-- Zone and interaction triggers are point-in-volume tests with enter/exit events.
+- Ground height is the walking surface (terrace + paving/path lift), raised by the top of
+  any collider box the cat stands on, or a walkway deck (the pier). No mesh raycasts.
+  Steps of up to 0.35 units are climbed automatically; higher ledges need a jump.
+- Gravity and jump are integrated by hand (gravity 20, jump velocity 6, apex 0.9), with a
+  short coyote time and jump buffer.
+- The cat is a vertical cylinder (radius 0.4, height 1) pushed out of axis-aligned boxes
+  (circle vs box), which gives sliding along walls. A uniform grid keeps queries local.
+- The walkable boundary sits just inside the island wall; leaving it projects the cat
+  back onto the edge, so it slides along the wall and cannot jump over it.
+- Movement is tank-style: W/S along the facing direction, A/D turn with a little inertia.
+- Interaction targets are points within 2 units, preferring ones the cat faces.
 
 ## Assets
 
-- Cat: `public/models/muzna-cat.glb` (Blender export; requirements in
-  `public/models/README.md`). Until it exists, the engine draws a procedural placeholder.
+- Cat: `public/models/Cat Muzna/Cat Muzna/`: `Cat.glb` plus one GLB per animation, all
+  exported from the same Rigify rig (details in `public/models/README.md`). The clips are
+  taken from the animation files and bound to the base model by bone name; the running
+  clip's root motion is removed. If the cat fails to load, the world stays on the dev
+  camera.
 - Promo video: `public/videos/portfolio-intro.mp4` (After Effects export).
 - Draco decoder files are copied from `three/examples/jsm/libs/draco` into
   `public/draco/` when the first compressed model is added.
