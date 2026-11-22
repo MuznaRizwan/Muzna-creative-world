@@ -70,6 +70,12 @@ export const CAT_PLAYER = Object.freeze({
   turnSpeed: 2.7,
   runTurnSpeed: 2.2,
   turnAcceleration: 14,
+  /**
+   * When an object's action runs, in seconds into the 3.2 s interaction clip:
+   * the first paw tap (measured from the paw bones). The clip then finishes
+   * and the cat returns to idle behind the panel.
+   */
+  interactActionTime: 2.2,
   /** Turn rate used when facing an object before interacting. */
   faceSpeed: 6,
   gravity: 20,

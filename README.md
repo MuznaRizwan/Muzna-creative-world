@@ -46,8 +46,9 @@ Imports use the `@/` alias for `src/` (configured in `jsconfig.json`).
 src/
 ├── app/            Routes, root layout, fonts, global CSS, loading/error/404 pages
 │   └── api/        chat, contact, ingest (stubs until their phases)
-├── components/     React components only: ui/, layout/, chatbot/, world/, overlays/
-├── lib/            three/ (engine), physics/, supabase/, email/ (state/, ai/ to come)
+├── components/     React components only: ui/, layout/, chatbot/, world/, overlays/,
+│                   navigation/, portfolio/
+├── lib/            three/ (engine), physics/, state/, supabase/, email/ (ai/ to come)
 ├── data/           Portfolio content and chatbot knowledge base
 ├── constants/      Site identity, asset paths
 ├── types/          JSDoc type definitions

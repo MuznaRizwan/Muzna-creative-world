@@ -118,7 +118,7 @@ export function buildWelcomePlaza(ctx) {
   kit.block(group, { w: 1.3, h: 1.15, d: 0.8, mat: kit.material("timber"), x: kiosk.x, y: PAVING_TOP, z: kiosk.z, ry: -0.5 });
   kit.block(group, { w: 1.45, h: 0.08, d: 0.95, mat: kit.colour(zone.accent), x: kiosk.x, y: PAVING_TOP + 1.15, z: kiosk.z, ry: -0.5 });
   ctx.collider(kiosk.x, kiosk.z, 1.4, 1.2, 1.2);
-  ctx.interactable({ id: "plaza-kiosk", label: "Say hello", x: kiosk.x - 0.5, y: 1.35, z: kiosk.z + 0.6 });
+  ctx.interactable({ id: "plaza-kiosk", x: kiosk.x - 0.5, y: 1.35, z: kiosk.z + 0.6 });
 
   // Chai stall with a truck-art awning.
   const chai = { x: -4.2, z: 3.4 };

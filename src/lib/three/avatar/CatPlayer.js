@@ -28,6 +28,7 @@ import { createCanvasTexture } from "../utils/canvasTexture";
  * @property {number} walkClipSpeed  Ground speed that matches the walk clip at timeScale 1.
  * @property {number} runClipSpeed   Ground speed that matches the run clip at timeScale 1.
  * @property {{ width: number, length: number }} shadowSize  Blob shadow footprint.
+ * @property {number} actionTime  Seconds into the interaction clip when the object's action runs.
  */
 
 /** Soft round shadow drawn on the ground under the cat. */
@@ -59,7 +60,7 @@ function createBlobShadow(/** @type {import("../utils/ResourceTracker").Resource
 
 export class CatPlayer {
   /** @param {CatPlayerOptions} options */
-  constructor({ model, animator, collision, settings, interactions, tracker, spawn, walkClipSpeed, runClipSpeed, shadowSize }) {
+  constructor({ model, animator, collision, settings, interactions, tracker, spawn, walkClipSpeed, runClipSpeed, shadowSize, actionTime }) {
     this.model = model;
     this.animator = animator;
     this.collision = collision;
@@ -69,6 +70,7 @@ export class CatPlayer {
     this.walkClipSpeed = walkClipSpeed;
     this.runClipSpeed = runClipSpeed;
     this.shadowSize = shadowSize;
+    this.actionTime = actionTime;
 
     this.body = new CharacterController(collision, settings);
     this.body.teleport(spawn.x, spawn.z, spawn.yaw);
@@ -122,7 +124,9 @@ export class CatPlayer {
   }
 
   /**
-   * Try to interact with the focused object.
+   * Try to interact with the object in reach: face it, lock movement, play the
+   * interaction once, run the object's action at the paw tap, and hand control
+   * back when the animation ends.
    * @returns {boolean} Whether an interaction started.
    */
   interact() {
@@ -135,10 +139,14 @@ export class CatPlayer {
     this.body.locked = true;
     this.body.speed = 0;
     this.activeTarget = target;
-    const started = this.animator.playInteraction(() => {
-      this.body.locked = false;
-      this.body.faceYaw = null;
-      this.activeTarget = null;
+    const started = this.animator.playInteraction({
+      momentTime: this.actionTime,
+      onMoment: () => this.interactions.trigger(target),
+      onFinished: () => {
+        this.body.locked = false;
+        this.body.faceYaw = null;
+        this.activeTarget = null;
+      },
     });
     if (!started) {
       this.body.locked = false;
@@ -146,7 +154,6 @@ export class CatPlayer {
       this.activeTarget = null;
       return false;
     }
-    this.interactions.trigger(target);
     return true;
   }
 

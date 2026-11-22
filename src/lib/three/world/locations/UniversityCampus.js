@@ -117,7 +117,7 @@ export function buildUniversityCampus(ctx) {
   // Notice board: the campus interaction point.
   noticeBoard(kit, group, 4.4, 4.4, -0.5);
   ctx.collider(4.4, 4.4, 1.6, 0.6, 1.6);
-  ctx.interactable({ id: "campus-noticeboard", label: "Education", x: 3.7, y: 1.1, z: 5.0 });
+  ctx.interactable({ id: "campus-noticeboard", x: 3.7, y: 1.1, z: 5.0 });
 
   // Bicycle-rack style railing and a small gatehouse roof over the south entry.
   gableRoof(ctx, group, { x: -1.0, y: y0 + 2.4, z: 5.4, w: 2.2, h: 0.8, d: 1.0, ry: 0 });

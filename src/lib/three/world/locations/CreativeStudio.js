@@ -77,7 +77,7 @@ export function buildCreativeStudio(ctx) {
     })
   );
   ctx.collider(2.9, 2.2, 2.6, 2.0, 5);
-  ctx.interactable({ id: "studio-easel", label: "About Muzna", x: 1.6, y: 1.1, z: 3.4 });
+  ctx.interactable({ id: "studio-easel", x: 1.6, y: 1.1, z: 3.4 });
 
   // Sculpture stand: an unfinished low-poly form, wireframe at the top.
   const plinth = { x: 1.3, z: -3.6 };

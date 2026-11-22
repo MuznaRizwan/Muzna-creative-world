@@ -75,7 +75,7 @@ export function buildAIStation(ctx) {
     })
   );
   ctx.collider(-3.0, 3.0, 1.8, 1.2, 1.4);
-  ctx.interactable({ id: "ai-desk", label: "Ask a question", x: -2.5, y: 1.25, z: 3.9 });
+  ctx.interactable({ id: "ai-desk", x: -2.5, y: 1.25, z: 3.9 });
 
   // Star chart on an easel.
   const chart = new THREE.Group();

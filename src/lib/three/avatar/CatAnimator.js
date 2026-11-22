@@ -46,6 +46,10 @@ export class CatAnimator {
     this.actions.idle.play();
     /** @type {(() => void) | null} */
     this.onInteractFinished = null;
+    /** Called once when the interaction clip reaches `momentTime` (e.g. the paw tap). */
+    /** @type {(() => void) | null} */
+    this.onInteractMoment = null;
+    this.momentTime = 0;
 
     this.handleFinished = this.handleFinished.bind(this);
     this.mixer.addEventListener("finished", this.handleFinished);
@@ -54,6 +58,8 @@ export class CatAnimator {
   /** @param {{ action: THREE.AnimationAction }} event */
   handleFinished(event) {
     if (event.action !== this.actions.interact || this.state !== "interact") return;
+    // If the clip ended before the moment fired (very short clip), fire it now.
+    this.fireMoment();
     const done = this.onInteractFinished;
     this.onInteractFinished = null;
     this.play("idle", FADE.fromInteract);
@@ -94,14 +100,24 @@ export class CatAnimator {
     this.actions[state].timeScale = timeScale;
   }
 
+  fireMoment() {
+    const moment = this.onInteractMoment;
+    this.onInteractMoment = null;
+    moment?.();
+  }
+
   /**
    * Play the interaction once.
-   * @param {() => void} [onFinished]
+   * @param {{ onMoment?: () => void, momentTime?: number, onFinished?: () => void }} [options]
+   *   `onMoment` runs when the clip reaches `momentTime` seconds; `onFinished`
+   *   when it has ended (the cat then returns to idle).
    * @returns {boolean} false if one is already playing.
    */
-  playInteraction(onFinished) {
+  playInteraction({ onMoment, momentTime = 0, onFinished } = {}) {
     if (this.interacting) return false;
     this.onInteractFinished = onFinished ?? null;
+    this.onInteractMoment = onMoment ?? null;
+    this.momentTime = Math.min(momentTime, this.actions.interact.getClip().duration);
     this.actions.interact.timeScale = 1;
     this.play("interact", FADE.toInteract);
     return true;
@@ -111,12 +127,14 @@ export class CatAnimator {
   cancelInteraction() {
     if (!this.interacting) return;
     this.onInteractFinished = null;
+    this.onInteractMoment = null;
     this.play("idle", 0.15);
   }
 
   /** @param {number} delta */
   update(delta) {
     this.mixer.update(delta);
+    if (this.onInteractMoment && this.interacting && this.actions.interact.time >= this.momentTime) this.fireMoment();
   }
 
   dispose() {

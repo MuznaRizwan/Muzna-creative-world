@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 
 import { ZONES } from "@/data/worldLayout";
+import { useStore } from "@/hooks/useStore";
+
+import { useWorld } from "./WorldContext";
 
 /**
  * Temporary developer controls: send the cat to each location, switch between
@@ -12,9 +15,11 @@ import { ZONES } from "@/data/worldLayout";
  * (Movement keys are handled by the engine.) Replaced by the real navigation
  * and HUD in later phases.
  *
- * @param {{ engine: import("@/lib/three/Engine").Engine, mode: import("@/lib/three/Engine").CameraMode }} props
+ * @param {{ engine: import("@/lib/three/Engine").Engine }} props
  */
-export function DevPanel({ engine, mode }) {
+export function DevPanel({ engine }) {
+  const { state } = useWorld();
+  const mode = useStore(state, (s) => s.mode);
   const [debug, setDebug] = useState(false);
   const [stats, setStats] = useState(() => engine.getStats());
   // Rendered only after the engine is ready (client-side), so window is available.
@@ -30,6 +35,8 @@ export function DevPanel({ engine, mode }) {
     const onKey = (event) => {
       const target = /** @type {HTMLElement | null} */ (event.target);
       if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      // Shortcuts are off while a portfolio panel is open.
+      if (state.getState().panel) return;
       if (event.key === "0") engine.showOverview();
       else if (/^[1-8]$/.test(event.key)) engine.focusLocation(ZONES[Number(event.key) - 1].id);
       else if (event.key.toLowerCase() === "c") engine.showCatView();
@@ -43,7 +50,7 @@ export function DevPanel({ engine, mode }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [engine]);
+  }, [engine, state]);
 
   const toggleDebug = () => {
     engine.setDebug(!debug);

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
 import { PALETTE, WORLD } from "@/constants/world";
+import { INTERACTABLES } from "@/data/interactables";
 import { PATHS, SIGNPOSTS, ZONE_BY_ID, ZONES } from "@/data/worldLayout";
 import { CollisionWorld } from "@/lib/physics/CollisionWorld";
 
@@ -23,13 +24,7 @@ import { createTextures } from "./textures";
 
 /** @typedef {import("./debug").Collider} Collider */
 
-/**
- * @typedef {object} Interactable
- * @property {string} id
- * @property {string} zoneId
- * @property {string} label
- * @property {number} x @property {number} y @property {number} z
- */
+/** @typedef {import("../interactions/InteractionSystem").Interactable} Interactable */
 
 /** Height of path ribbons above the terrace they lie on (see Paths.js). */
 const PATH_LIFT = 0.035;
@@ -226,8 +221,14 @@ export class World {
       instance,
       instances: { add: instance },
       collider: (x, z, w, d, h, y = 0) => this.addCollider({ x: origin.x + x, z: origin.z + z, w, d, h, y: origin.y + y }),
-      interactable: ({ id, label, x, y, z }) =>
-        this.interactables.push({ id, zoneId: zone.id, label, x: origin.x + x, y: origin.y + y, z: origin.z + z }),
+      interactable: ({ id, x, y, z }) => {
+        const definition = INTERACTABLES[id];
+        if (!definition) {
+          if (process.env.NODE_ENV === "development") console.warn(`[world] no interactable defined for "${id}"; skipped.`);
+          return;
+        }
+        this.interactables.push({ ...definition, zoneId: zone.id, x: origin.x + x, y: origin.y + y, z: origin.z + z });
+      },
       animate: (update) => this.updaters.push(update),
       walkway: ({ x, z, angle, length, width, y }) =>
         this.walkways.push({ x: origin.x + x, z: origin.z + z, angle, length, width, y: origin.y + y }),

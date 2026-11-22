@@ -15,7 +15,7 @@ import { heightAt } from "./terrain";
  * Developer overlay (hidden by default): collider boxes, interaction radii
  * and cat-sized scale proxies, for checking the world against the cat metrics.
  * @param {import("./kit").Kit} kit
- * @param {{ colliders: Collider[], interactables: { x: number, y: number, z: number }[] }} data
+ * @param {{ colliders: Collider[], interactables: { x: number, y: number, z: number, range?: number }[] }} data
  */
 export function createDebugLayer(kit, { colliders, interactables }) {
   const group = new THREE.Group();
@@ -45,7 +45,7 @@ export function createDebugLayer(kit, { colliders, interactables }) {
     for (let i = 0; i < 32; i += 1) {
       const a = (i / 32) * Math.PI * 2;
       const b = ((i + 1) / 32) * Math.PI * 2;
-      const r = CAT_METRICS.interactRadius;
+      const r = point.range ?? CAT_METRICS.interactRadius;
       ringPositions.push(point.x + Math.cos(a) * r, y, point.z + Math.sin(a) * r, point.x + Math.cos(b) * r, y, point.z + Math.sin(b) * r);
     }
   }

@@ -30,13 +30,35 @@ Browser window
      navbar, location label, interaction prompt, minimap, panels, chatbot, contact
 ```
 
-The two layers talk through a small store in `src/lib/state/`:
+The two layers talk through a small store in `src/lib/state/` (`worldState.js`), one per
+mounted world, shared through React context (`components/world/WorldContext.js`) and read
+with `hooks/useStore.js`:
 
-- **Engine → UI:** loading progress, ready, current zone, nearby interactable.
-- **UI → engine:** teleport to a zone, enable/disable input (e.g. while a panel is open),
-  joystick vector, interact.
+- **Engine → UI:** camera mode, cat ready, the interactable in reach (`focus`). Written
+  only when they change.
+- **UI → engine:** the open portfolio panel. While one is open the engine locks the cat
+  (movement, jump, interact, reset). The few direct calls are interact (the prompt's tap
+  target) and travel to a location.
 - Per-frame data (cat position) is read directly from the engine, for example by the
   minimap's own animation frame, never through React state.
+
+## Interactions
+
+- `src/data/interactables.js` defines every interactable object: id, name, zone, type,
+  prompt ("Press E to …"), reach and action (e.g. open the `skills` panel). Location
+  builders only place an id next to its prop with `ctx.interactable({ id, x, y, z })`.
+  The World merges the two; a placed id with no definition is skipped with a warning.
+- `src/data/portfolioSections.js` lists the eight sections (one per location).
+- `InteractionSystem` (engine) picks the single nearest object in reach, preferring ones
+  the cat faces, and dispatches actions by kind (`registerAction`). Detection knows
+  nothing about the DOM.
+- Pressing E: the cat turns to face the object, plays the interaction clip once with
+  movement locked, and the action runs at the paw tap (2.2 s). The panel opens then; the
+  clip finishes and the cat returns to idle behind it.
+- `components/portfolio/PortfolioPanel.jsx` renders the open section (side drawer, or
+  bottom sheet on phones). Close with ×, Escape or the dimmed backdrop. The cat keeps its
+  position. `components/navigation/SiteMenu.jsx` opens any section directly, as
+  conventional navigation.
 
 ## Folder structure
 
@@ -45,9 +67,10 @@ src/
 ├─ app/            layout.jsx, page.jsx, globals.css, fonts.js, loading/error/global-error/not-found.jsx
 │  └─ api/         chat/, contact/, ingest/ route handlers
 ├─ components/     React only (see src/components/README.md)
-│  ├─ ui/  layout/  chatbot/  world/ (WorldCanvas, status, dev panel, fallback)   exist
-│  ├─ overlays/    InteractionPrompt (exists); location label, minimap            planned
-│  └─ navigation/  portfolio/  contact/                                           planned
+│  ├─ ui/  layout/  chatbot/  world/ (WorldCanvas, context, status, dev panel, fallback)
+│  ├─ overlays/    InteractionPrompt; location label, minimap planned
+│  ├─ navigation/  SiteMenu (conventional navigation to every section)
+│  └─ portfolio/   PortfolioPanel + sections/ (one view per section, placeholders for now)
 ├─ lib/
 │  ├─ three/       vanilla Three.js engine, no React (Phase 4)
 │  │  ├─ Engine.js        renderer, scene, loop, resize, visibility pause, camera modes, dispose
@@ -64,12 +87,13 @@ src/
 │  │  ├─ avatar/          CatModel (GLB prep), catClips (clip extraction), CatAnimator, CatPlayer
 │  │  └─ interactions/    InteractionSystem (focus, E to interact, handlers per object/zone)
 │  ├─ physics/     CollisionWorld (boxes, ground, boundary, walkways, raycast), CharacterController
-│  ├─ state/       planned: engine ↔ React store
+│  ├─ state/       createStore, worldState (engine ↔ React)
 │  ├─ ai/          planned: embeddings and RAG pipeline
 │  ├─ supabase/    server.js (service-role client)
 │  └─ email/       resend.js
-├─ hooks/          planned: useGameStore, useReducedMotion, useWebGLSupport
-├─ data/           portfolioData.js, portfolio-knowledge.js (single source of content)
+├─ hooks/          useStore (subscribe to a store slice)
+├─ data/           portfolioData.js, portfolio-knowledge.js (content), portfolioSections.js,
+│                  interactables.js, worldLayout.js
 ├─ constants/      site.js, assets.js
 ├─ types/          JSDoc @typedef modules (no runtime code)
 └─ utils/          cn.js

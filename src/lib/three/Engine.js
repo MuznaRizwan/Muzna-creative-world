@@ -23,12 +23,10 @@ import { World } from "./world/World";
 /** @typedef {"follow" | "dev"} CameraMode */
 
 /**
- * @typedef {object} EngineCallbacks
+ * @typedef {object} EngineOptions
+ * @property {import("@/lib/state/worldState").WorldStateStore} state  Shared with the HTML interface.
  * @property {(ratio: number) => void} [onProgress] Loading progress 0–1.
  * @property {(error: Error) => void} [onError] Fatal runtime errors (e.g. lost WebGL context).
- * @property {(target: Interactable | null) => void} [onFocusChange] The interactable in reach changed.
- * @property {(target: Interactable) => void} [onInteract] The cat started interacting with an object.
- * @property {(mode: CameraMode) => void} [onModeChange] Switched between the follow camera and the dev camera.
  */
 
 /**
@@ -47,21 +45,21 @@ import { World } from "./world/World";
 /**
  * The Three.js engine: owns the renderer, scene, camera, loop, world and the
  * playable cat. React mounts it into a container and calls `dispose()` on
- * unmount; it never touches React state directly, only calls the callbacks
- * above when something changes (never per frame).
+ * unmount. The engine and the interface share a small store (`state`): the
+ * engine writes the camera mode and the object in reach (only when they
+ * change, never per frame) and reads which portfolio panel is open, locking
+ * the cat's controls while one is.
  */
 export class Engine {
   /**
    * @param {HTMLElement} container
-   * @param {EngineCallbacks} [callbacks]
+   * @param {EngineOptions} options
    */
-  constructor(container, { onProgress, onError, onFocusChange, onInteract, onModeChange } = {}) {
+  constructor(container, { state, onProgress, onError }) {
     this.container = container;
+    this.state = state;
     this.onProgress = onProgress ?? (() => {});
     this.onError = onError ?? (() => {});
-    this.onFocusChange = onFocusChange ?? (() => {});
-    this.onInteract = onInteract ?? (() => {});
-    this.onModeChange = onModeChange ?? (() => {});
     this.disposed = false;
     this.running = false;
     /** Whether the loop should run when the tab is visible. */
@@ -111,6 +109,11 @@ export class Engine {
     this.handleContextLost = this.handleContextLost.bind(this);
     document.addEventListener("visibilitychange", this.handleVisibility);
     this.canvas.addEventListener("webglcontextlost", this.handleContextLost);
+
+    // Opening or closing a portfolio panel locks or frees the cat.
+    this.unsubscribeState = state.subscribe((next, previous) => {
+      if (next.panel !== previous.panel) this.applyControlLock();
+    });
 
     this.viewport = new Viewport(container, (size) => {
       this.renderer.setPixelRatio(size.pixelRatio);
@@ -200,8 +203,11 @@ export class Engine {
     const { model, clips, report } = loaded;
     const collision = world.createCollisionWorld();
     this.interactions = new InteractionSystem(world.interactables, { radius: CAT_METRICS.interactRadius });
-    this.interactions.onFocusChange((target) => this.onFocusChange(target));
-    this.interactions.onInteract((target) => this.onInteract(target));
+    this.interactions.onFocusChange((target) => this.state.setState({ focus: target }));
+    // Objects that open a portfolio section (see data/interactables.js).
+    this.interactions.registerAction("open-panel", (target) => {
+      this.state.openPanel(target.action.section, { sourceId: target.id, params: target.action.params ?? {} });
+    });
 
     // The running clip's root motion gives the ground speed its stride matches.
     const runClipSpeed = (report.run.travel * model.scale) / report.run.duration || CAT_PLAYER.runSpeed;
@@ -222,10 +228,12 @@ export class Engine {
       walkClipSpeed: CAT_PLAYER.walkClipSpeed,
       runClipSpeed,
       shadowSize: { width: CAT_METRICS.width * 1.9, length: CAT_METRICS.length * 1.25 },
+      actionTime: CAT_PLAYER.interactActionTime,
     });
     this.scene.add(this.player.group);
     this.followCamera = new FollowCamera(this.devCamera.camera, collision, CAT_CAMERA);
     this.catReport = { clips: report, runClipSpeed, scale: model.scale };
+    this.state.setState({ catReady: true });
     this.setMode("follow", { instant: true });
   }
 
@@ -241,19 +249,41 @@ export class Engine {
       this.devCamera.tween = null;
       this.devCamera.controls.enabled = false;
       follow.activate(player.view, { instant, lookFrom: this.devCamera.controls.target });
-      player.setEnabled(true);
-      this.interactions?.setEnabled(true);
       this.mode = "follow";
     } else {
       this.devCamera.controls.enabled = true;
       // Orbit around whatever the follow camera was looking at.
       if (this.mode === "follow" && follow) this.devCamera.controls.target.copy(follow.lookAt);
-      player?.setEnabled(false);
-      this.input.clear();
-      this.interactions?.setEnabled(false);
       this.mode = "dev";
     }
-    this.onModeChange(this.mode);
+    this.applyControlLock();
+    this.state.setState({ mode: this.mode });
+  }
+
+  /** Whether the visitor is steering the cat right now. */
+  get controlsFree() {
+    return this.mode === "follow" && this.state.getState().panel === null;
+  }
+
+  /**
+   * The cat is controllable only with the follow camera and no panel open.
+   * Its position is untouched either way, so it waits where it was.
+   */
+  applyControlLock() {
+    const free = this.controlsFree;
+    this.player?.setEnabled(free);
+    this.interactions?.setEnabled(free);
+    // Ignore (and forget) game keys while locked, so keys held or pressed in a
+    // panel never move or jump the cat once it closes.
+    this.input.setEnabled(free);
+  }
+
+  /**
+   * Interact with the object in reach, as if E were pressed (for the on-screen
+   * prompt button on touch screens).
+   */
+  requestInteract() {
+    if (this.player && this.controlsFree) this.player.interact();
   }
 
   start() {
@@ -418,6 +448,7 @@ export class Engine {
     document.removeEventListener("visibilitychange", this.handleVisibility);
     this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
     this.viewport.dispose();
+    this.unsubscribeState();
     this.input.dispose();
     this.player?.dispose();
     this.interactions?.dispose();

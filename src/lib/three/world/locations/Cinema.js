@@ -139,7 +139,7 @@ export function buildCinema(ctx) {
   }
   kit.block(group, { w: 1.5, h: 0.12, d: 1.2, mat: kit.material("velvet"), x: kiosk.x, y: y0 + 1.6, z: kiosk.z });
   ctx.collider(kiosk.x, kiosk.z, 1.3, 1.0, 1.9);
-  ctx.interactable({ id: "cinema-kiosk", label: "Watch showreel", x: kiosk.x + 1.0, y: 1.1, z: kiosk.z + 0.9 });
+  ctx.interactable({ id: "cinema-kiosk", x: kiosk.x + 1.0, y: 1.1, z: kiosk.z + 0.9 });
 
   // Popcorn cart.
   const cart = { x: 2.8, z: 5.0 };

@@ -142,7 +142,7 @@ export function buildTechnologyLab(ctx) {
     })
   );
   ctx.collider(-3.6, 3.6, 0.9, 0.9, 1.6);
-  ctx.interactable({ id: "lab-kiosk", label: "View skills", x: -3.0, y: 1.2, z: 4.4 });
+  ctx.interactable({ id: "lab-kiosk", x: -3.0, y: 1.2, z: 4.4 });
 
   entranceSign(ctx, { x: -4.4, z: 5.0, ry: -0.5 });
 }

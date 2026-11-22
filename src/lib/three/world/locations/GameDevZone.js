@@ -62,7 +62,7 @@ export function buildGameDevZone(ctx) {
   opening(ctx, group, { x: hall.x, y: y0, z: front, w: 2.2, h: 2.4, lit: true });
   for (const dx of [-2.1, 2.1]) opening(ctx, group, { x: hall.x + dx, y: y0 + 1.1, z: front, w: 0.9, h: 1.1, lit: true });
   ctx.collider(hall.x, hall.z, levels[0].w, levels[0].d, top);
-  ctx.interactable({ id: "gamedev-hall", label: "Browse projects", x: hall.x + 1.6, y: 1.2, z: front + 0.8 });
+  ctx.interactable({ id: "gamedev-hall", x: hall.x + 1.6, y: 1.2, z: front + 0.8 });
 
   // Marquee with incandescent bulbs (warm, not neon).
   const marquee = { y: top + 0.5, w: 4.2, h: 1.3, z: hall.z + 0.2 };
@@ -113,7 +113,7 @@ export function buildGameDevZone(ctx) {
     const [x, z] = cabinetSpots[i];
     cabinet(ctx, group, { x, y: y0, z, ry: Math.PI / 2 - 0.1 * (i - 1), title: project.title, colour: CABINET_COLOURS[i % CABINET_COLOURS.length] });
     ctx.collider(x, z, 1.0, 1.0, 2.0);
-    ctx.interactable({ id: `gamedev-${project.id}`, label: `Play: ${project.title}`, x: x + 1.0, y: 1.0, z });
+    ctx.interactable({ id: `gamedev-${project.id}`, x: x + 1.0, y: 1.0, z });
   });
 
   // Featured project on a raised, spotlit stage behind a velvet rope.
@@ -129,7 +129,7 @@ export function buildGameDevZone(ctx) {
     ctx.instance("bulb", rx, y0 + 0.8, rz, { scale: 0.06 });
   }
   ctx.collider(stage.x, stage.z, stage.r * 2, stage.r * 2, 0.6);
-  ctx.interactable({ id: `gamedev-${featured.id}`, label: `Play: ${featured.title}`, x: stage.x - stage.r - 0.9, y: 1.0, z: stage.z });
+  ctx.interactable({ id: `gamedev-${featured.id}`, x: stage.x - stage.r - 0.9, y: 1.0, z: stage.z });
 
   // The zone's one real spotlight, aimed at the stage (no shadows: cheap).
   const spot = new THREE.SpotLight(PALETTE.lamp, 60, 12, 0.42, 0.6, 2);

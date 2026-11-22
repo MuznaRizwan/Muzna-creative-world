@@ -2,9 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { SiteMenu } from "@/components/navigation/SiteMenu";
 import { InteractionPrompt } from "@/components/overlays/InteractionPrompt";
+import { PortfolioPanel } from "@/components/portfolio/PortfolioPanel";
+import { createWorldState } from "@/lib/state/worldState";
 
 import { DevPanel } from "./DevPanel";
+import { WorldContext } from "./WorldContext";
 import { WorldError, WorldLoading } from "./WorldStatus";
 
 /**
@@ -13,17 +17,19 @@ import { WorldError, WorldLoading } from "./WorldStatus";
  * its own chunk. Safe under React Strict Mode: the first mount's engine is
  * fully disposed before the second one is created.
  *
- * @param {{ fallback: import("react").ReactNode }} props  Shown when WebGL is unavailable.
+ * The engine and the HTML overlays (prompt, menu, portfolio panel, dev panel)
+ * share one world-state store, provided to the overlays through context.
+ *
+ * @param {{ fallback: import("react").ReactNode, media: { showreel: boolean } }} props
+ *   `fallback` is shown when WebGL is unavailable; `media` says which optional files exist.
  */
-export function WorldCanvas({ fallback }) {
+export function WorldCanvas({ fallback, media }) {
   const containerRef = useRef(/** @type {HTMLDivElement | null} */ (null));
   const [status, setStatus] = useState(/** @type {"loading" | "ready" | "unsupported" | "error"} */ ("loading"));
   const [progress, setProgress] = useState(0);
   const [engine, setEngine] = useState(/** @type {import("@/lib/three/Engine").Engine | null} */ (null));
   const [errorMessage, setErrorMessage] = useState("");
-  // Updated only when they change (never per frame).
-  const [focus, setFocus] = useState(/** @type {import("@/lib/three/Engine").Interactable | null} */ (null));
-  const [mode, setMode] = useState(/** @type {import("@/lib/three/Engine").CameraMode} */ ("dev"));
+  const [state] = useState(createWorldState);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -51,16 +57,11 @@ export function WorldCanvas({ fallback }) {
           return;
         }
         instance = new Engine(container, {
+          state,
           onProgress: (ratio) => {
             if (!cancelled) setProgress(ratio);
           },
           onError: fail,
-          onFocusChange: (target) => {
-            if (!cancelled) setFocus(target);
-          },
-          onModeChange: (next) => {
-            if (!cancelled) setMode(next);
-          },
         });
         const ready = await instance.init();
         if (cancelled || !ready) return;
@@ -78,11 +79,13 @@ export function WorldCanvas({ fallback }) {
     return () => {
       cancelled = true;
       instance?.dispose();
+      // A remount starts from a clean slate (no stale focus or open panel).
+      state.setState({ focus: null, panel: null, catReady: false });
       if (process.env.NODE_ENV === "development" && /** @type {any} */ (window).__creativeWorld === instance) {
         delete (/** @type {any} */ (window).__creativeWorld);
       }
     };
-  }, []);
+  }, [state]);
 
   if (status === "unsupported") return <>{fallback}</>;
 
@@ -91,8 +94,14 @@ export function WorldCanvas({ fallback }) {
       <div ref={containerRef} className="absolute inset-0" />
       {status === "loading" && <WorldLoading progress={progress} />}
       {status === "error" && <WorldError message={errorMessage} />}
-      {status === "ready" && engine && <DevPanel engine={engine} mode={mode} />}
-      {status === "ready" && mode === "follow" && <InteractionPrompt target={focus} />}
+      {status === "ready" && engine && (
+        <WorldContext.Provider value={{ state, engine, media }}>
+          <DevPanel engine={engine} />
+          <InteractionPrompt />
+          <SiteMenu />
+          <PortfolioPanel />
+        </WorldContext.Provider>
+      )}
     </div>
   );
 }

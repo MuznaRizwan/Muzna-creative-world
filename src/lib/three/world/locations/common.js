@@ -12,7 +12,7 @@ import { createNameBoard } from "../props/signage";
  * @property {(type: import("../instances").InstanceType, x: number, y: number, z: number, options?: import("../instances").InstanceOptions) => void} instance  Add an instance at local coordinates.
  * @property {{ add: (type: import("../instances").InstanceType, x: number, y: number, z: number, options?: import("../instances").InstanceOptions) => void }} instances  Same, shaped like InstanceBuckets for prop helpers.
  * @property {(x: number, z: number, w: number, d: number, h: number, y?: number) => void} collider  Register an axis-aligned collision box (local).
- * @property {(spec: { id: string, label: string, x: number, y: number, z: number }) => void} interactable  Mark a future interaction point (local).
+ * @property {(spec: { id: string, x: number, y: number, z: number }) => void} interactable  Place an interactable from data/interactables.js at this point (local).
  * @property {(update: (delta: number, elapsed: number) => void) => void} animate  Per-frame update for dynamic objects.
  * @property {(spec: { x: number, z: number, angle: number, length: number, width: number, y: number }) => void} walkway  Walkable deck beyond the boundary (local start point, world angle).
  */

@@ -80,7 +80,7 @@ export function buildContactStation(ctx, { pierAngle }) {
   group.add(kit.mesh(kit.geo.sphere(1), kit.material("postRed"), { x: box.x, y: y0 + 1.05, z: box.z, sx: 0.3, sy: 0.18, sz: 0.3 }));
   kit.block(group, { w: 0.34, h: 0.05, d: 0.04, mat: kit.material("ink"), x: box.x, y: y0 + 0.8, z: box.z + 0.29, cast: false });
   ctx.collider(box.x, box.z, 0.7, 0.7, 1.25);
-  ctx.interactable({ id: "contact-postbox", label: "Send a message", x: box.x + 0.9, y: 1.1, z: box.z + 0.6 });
+  ctx.interactable({ id: "contact-postbox", x: box.x + 0.9, y: 1.1, z: box.z + 0.6 });
 
   noticeBoard(kit, group, -2.9, 2.0, 0.6);
   ctx.collider(-2.9, 2.0, 1.6, 0.8, 1.6);
