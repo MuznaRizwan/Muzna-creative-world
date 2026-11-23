@@ -1,274 +1,484 @@
+/**
+ * All portfolio content, in one place. Panels, the 3D world (arcade cabinets,
+ * lab beds, campus timeline) and the site menu read from here.
+ *
+ * Sources (Phase 7B, 2026-11-23): Muzna's LinkedIn profile (profile/Profile.pdf),
+ * her LinkedIn projects (profile/linkedin-projects.md), her website
+ * muzna.zubairy.world, and this repository. Nothing here is invented: a field is
+ * only filled when a source supports it, and team projects describe the project,
+ * not an individual share of the work. Open questions are listed in
+ * profile/phase-7b-content-mapping.md.
+ */
+
 /** @typedef {import("@/types/portfolio").ProfileData} ProfileData */
+/** @typedef {import("@/types/portfolio").ContactData} ContactData */
 /** @typedef {import("@/types/portfolio").SkillCategory} SkillCategory */
 /** @typedef {import("@/types/portfolio").Project} Project */
+/** @typedef {import("@/types/portfolio").ProjectCategoryInfo} ProjectCategoryInfo */
 /** @typedef {import("@/types/portfolio").EducationItem} EducationItem */
 /** @typedef {import("@/types/portfolio").ExperienceItem} ExperienceItem */
+/** @typedef {import("@/types/portfolio").AchievementItem} AchievementItem */
+/** @typedef {import("@/types/portfolio").LanguageItem} LanguageItem */
+
+// ---------------------------------------------------------------- profile
 
 /** @type {ProfileData} */
 export const profileData = {
-  name: "Muzna Rizwan",
-  title: "Computer Science Undergraduate",
-  specialization: "Gaming and Animation",
-  institution: "NED University of Engineering and Technology",
-  tagline:
-    "Bridging computational systems, 3D digital art, and interactive game design to create immersive digital experiences.",
-  bio: [
-    "I am a Computer Science undergraduate at NED University of Engineering and Technology, specializing in Gaming and Animation. My academic journey combines algorithmic thinking and software engineering with digital art, 3D modeling, and real-time graphics.",
-    "As a student, artist, game developer, and aspiring professional, I focus on crafting interactive environments, expressive character animations, and game systems where technical precision meets creative storytelling.",
-    "Whether developing gameplay logic in Unity, sculpting and rigging assets in Blender, or composing motion graphics in After Effects, I am passionate about exploring the intersection of art and code.",
+  name: "Muzna Zubairy",
+  headline: "Game Developer & 3D Animator in Training | Gaming & Animation Undergraduate at NED University | Bringing Virtual Worlds to Life",
+  location: "Karachi, Sindh, Pakistan",
+  studies: "Bachelor in Computer Science (Gaming and Animation), NED University of Engineering and Technology, 2023–2027 (in progress)",
+  summary: [
+    "Creative and self-motivated concept artist with interests in character, environment, and prop design.",
+    "Experienced with Adobe Creative Suite, Figma, Blender, and VR design tools.",
+    "Interested in game development, visual storytelling, and creative collaboration.",
   ],
-  contactEmail: "muzna.portfolio@example.com",
-  socials: {
-    github: "https://github.com",
-    linkedin: "https://linkedin.com",
-    itch: "https://itch.io",
-  },
+  creativeInterests: ["Character design", "Environment design", "Prop design", "Game development", "Visual storytelling", "Creative collaboration"],
 };
 
-/** @type {SkillCategory[]} */
-export const skillsCategories = [
-  {
-    key: "programming",
-    title: "Programming & Development",
-    subtitle: "Core software engineering and modern web technologies",
-    accent: "blue",
-    skills: [
-      { name: "C++", description: "Systems, algorithms, and performance-critical logic", highlight: true },
-      { name: "C#", description: "Unity gameplay programming and object-oriented architecture", highlight: true },
-      { name: "Python", description: "Scripting, tooling, and data manipulation" },
-      { name: "TypeScript", description: "Type-safe frontend and full-stack development", highlight: true },
-      { name: "JavaScript", description: "Modern ES6+ asynchronous web scripting" },
-      { name: "Next.js / React", description: "Server-side rendering and interactive component design" },
-      { name: "Tailwind CSS", description: "Utility-first responsive layouts and styling" },
-      { name: "SQL & Databases", description: "Relational data modeling and queries" },
-    ],
-  },
-  {
-    key: "gameDev",
-    title: "Game Development",
-    subtitle: "Real-time engine mechanics, logic, and interactive systems",
-    accent: "lavender",
-    skills: [
-      { name: "Unity Engine", description: "Scene assembly, 2D/3D development, physics and prefab systems", highlight: true },
-      { name: "Gameplay Scripting", description: "Player controls, camera state machines, and inventory systems", highlight: true },
-      { name: "Game Physics", description: "Colliders, raycasting, and kinematic simulations" },
-      { name: "Level Design", description: "Spatial pacing, player guidance, and environment blockouts" },
-      { name: "Game Loop & UI", description: "HUDs, game state managers, and pause menus" },
-      { name: "Audio Integration", description: "Sound effect triggers and atmospheric background audio" },
-    ],
-  },
-  {
-    key: "modeling3D",
-    title: "3D Modeling & Animation",
-    subtitle: "Polygon modeling, rigging, texturing, and character motion",
-    accent: "pink",
-    skills: [
-      { name: "Blender", description: "Primary 3D creation suite for modeling, rigging, and animation", highlight: true },
-      { name: "Character Rigging", description: "Armature setups, bone constraints, and weight painting", highlight: true },
-      { name: "3D Keyframe Animation", description: "Walk cycles, idle poses, and action sequences", highlight: true },
-      { name: "Low-Poly & High-Poly", description: "Mesh topology optimized for real-time engines" },
-      { name: "UV Unwrapping & Texturing", description: "PBR texture assignment, seam placement, and baking" },
-      { name: "Three.js / WebGL", description: "Real-time 3D web asset display with vanilla Three.js" },
-    ],
-  },
-  {
-    key: "graphicDesign",
-    title: "Graphic Design",
-    subtitle: "Visual composition, typography, and digital art foundations",
-    accent: "lavender",
-    skills: [
-      { name: "Adobe Photoshop", description: "Texture editing, digital illustration, and post-processing", highlight: true },
-      { name: "Adobe Illustrator", description: "Vector illustration, logo design, and iconography", highlight: true },
-      { name: "Visual Composition", description: "Balance, negative space, visual hierarchy, and framing" },
-      { name: "Color Theory", description: "Palette selection, emotional resonance, and contrast" },
-      { name: "Digital Painting", description: "Concept art sketches, moods, and character silhouettes" },
-    ],
-  },
-  {
-    key: "videoMotion",
-    title: "Video Editing & Motion Graphics",
-    subtitle: "Cinematic pacing, kinetic graphics, and visual effects",
-    accent: "blue",
-    skills: [
-      { name: "Adobe After Effects", description: "Motion design, kinetic typography, and promotional video production", highlight: true },
-      { name: "Adobe Premiere Pro", description: "Timeline editing, sequence cutting, and multi-track audio sync", highlight: true },
-      { name: "Keyframe Dynamics", description: "Graph editor curves, easing, and spatial interpolations" },
-      { name: "Visual Transitions", description: "Camera wipes, seamless match cuts, and stylized glitches" },
-      { name: "Audio-Visual Timing", description: "Beat matching, sonic emphasis, and mood pacing" },
-    ],
-  },
-  {
-    key: "uiUx",
-    title: "UI/UX Design",
-    subtitle: "Human-centered interfaces for games and web applications",
-    accent: "pink",
-    skills: [
-      { name: "Figma", description: "Wireframing, high-fidelity UI mockups, and interactive prototypes", highlight: true },
-      { name: "Game UI & HUD Design", description: "Non-intrusive gameplay telemetry and clean inventory displays" },
-      { name: "User Flow Mapping", description: "Intuitive player navigation and interaction pipelines" },
-      { name: "Responsive Layouts", description: "Mobile-first, desktop-adaptive design grids" },
-      { name: "Accessibility Basics", description: "Contrast compliance, readable typography, and visual clarity" },
-    ],
-  },
-];
+/** @type {ContactData} */
+export const contactData = {
+  email: "zubairy4605986@cloud.neduet.edu.pk",
+  emailProvisional: true,
+  links: [
+    { label: "Website", url: "https://muzna.zubairy.world" },
+    { label: "LinkedIn", url: "https://www.linkedin.com/in/muzna-zubairy" },
+    { label: "Behance", url: "https://www.behance.net/muznazubairy" },
+  ],
+};
 
-/** @type {Project[]} */
-export const projectsData = [
-  {
-    id: "moral-triage",
-    title: "Moral Triage",
-    tagline: "A narrative decision-making game exploring ethical dilemmas under severe crisis constraints.",
-    category: "game",
-    categoryLabel: "Game Development",
-    description:
-      "An interactive choice-driven game built to test players' moral reasoning under time-sensitive emergency scenarios. Players are tasked with managing limited resources and allocating critical aid, where every choice incurs realistic consequences.",
-    longDescription:
-      "Moral Triage is a narrative-driven game project developed to investigate how interactive media can simulate real-world ethical dilemmas. The player assumes the role of an emergency coordinator during a high-stakes crisis, forced to allocate scarce medical and operational resources across conflicting priorities. The project emphasizes atmospheric sound design, branched dialogue trees, and tension-building gameplay loops created in Unity.",
-    technologies: ["Unity", "C#", "Blender", "Figma", "Photoshop"],
-    keyFeatures: [
-      "Branching narrative tree with multiple distinct story outcomes",
-      "Dynamic resource management system with real-time consequences",
-      "Custom UI system designed in Figma and implemented via Unity UI Toolkit",
-      "Original low-poly environment assets and props modeled in Blender",
-      "Atmospheric audio triggers and tense situational pacing",
-    ],
-    role: "Lead Developer & Game Designer — responsible for core mechanics scripting, branching logic, UI implementation, and 3D prop modeling.",
-    previewGradient: "from-indigo-900/60 via-purple-900/40 to-neutral-900",
-    featured: true,
-    githubUrl: "https://github.com",
-    demoUrl: "https://itch.io",
-  },
-  {
-    id: "interactive-3d-portfolio",
-    title: "Interactive 3D Web Portfolio",
-    tagline: "An explorable 3D portfolio world, guided by a cat character modeled in Blender. Currently in development.",
-    category: "web",
-    categoryLabel: "3D Web Engineering",
-    description:
-      "An interactive web portfolio built with Next.js and vanilla Three.js. Visitors explore a small island town as a cat; each location opens a section of the portfolio, and a conventional menu gives direct access to the same content.",
-    longDescription:
-      "Muzna's Creative World combines a real-time 3D environment with a professional portfolio website. The 3D world is rendered with vanilla Three.js inside a Next.js App Router application, with a custom lightweight physics and collision system for the cat character. Portfolio panels, a RAG chatbot backed by Supabase pgvector, and a contact form sent through Resend sit in an HTML layer above the world.",
-    technologies: ["Next.js", "React", "JavaScript", "Three.js", "Tailwind CSS", "Framer Motion", "Supabase", "Blender"],
-    keyFeatures: [
-      "Explorable 3D island town with eight portfolio locations",
-      "Cat avatar modeled, rigged and animated in Blender, loaded as GLB",
-      "Custom lightweight physics: ground checks and basic collision detection",
-      "Conventional navigation menu as an accessible alternative to exploring",
-    ],
-    role: "Full-Stack Developer & 3D Artist — designing the architecture, the 3D world and the Blender cat character.",
-    previewGradient: "from-blue-900/60 via-indigo-900/40 to-neutral-900",
-    featured: true,
-    githubUrl: "https://github.com",
-  },
-  {
-    id: "avatar-modeling-rigging",
-    title: "Stylized Character Modeling & Rigging",
-    tagline: "Custom 3D avatar designed from concept sketch to complete armature rigging and keyframe animation.",
-    category: "3d",
-    categoryLabel: "3D Animation",
-    description:
-      "A complete 3D character pipeline executed in Blender. Includes clean quad topology, armature setup with inverse kinematics (IK), weight painting, and idle animation loops.",
-    longDescription:
-      "A specialized character art and animation project developed in Blender. The model features clean mesh flow for deformation, custom armatures with IK/FK switching for the limbs, facial bone controllers, and stylized PBR materials. The final asset is exported in GLTF/GLB binary format for real-time web rendering.",
-    technologies: ["Blender", "PBR Texturing", "Weight Painting", "glTF / GLB", "Rigging"],
-    keyFeatures: [
-      "Optimized polygon count suitable for real-time web and mobile rendering",
-      "Custom skeleton hierarchy with IK constraints for fluid limb movement",
-      "Hand-tuned weight painting to eliminate mesh pinching at joints",
-      "Modular textures with metallic, roughness, and normal map support",
-    ],
-    role: "3D Modeler & Animator — designed concept silhouettes, modeled mesh, rigged armature, and animated cycles.",
-    previewGradient: "from-purple-900/60 via-pink-900/40 to-neutral-900",
-    featured: false,
-  },
-  {
-    id: "motion-intro-showcase",
-    title: "Portfolio Brand & Motion Showcase",
-    tagline: "High-impact 30–60 second promotional video created in Adobe After Effects with kinetic typography.",
-    category: "motion",
-    categoryLabel: "Motion Graphics",
-    description:
-      "A dynamic promotional video presenting creative identity, project highlights, and animation workflows. Features kinetic text reveals, synced sound design, and custom 3D composite passes.",
-    longDescription:
-      "Created entirely in Adobe After Effects, this promotional video delivers a fast-paced overview of creative and technical accomplishments. It merges stylized rendering passes from Blender with kinetic typography, geometric motion elements, and precise audio synchronization.",
-    technologies: ["Adobe After Effects", "Adobe Premiere Pro", "Audio Editing", "Kinetic Typography"],
-    keyFeatures: [
-      "Custom motion graphics templates and graph editor easing curves",
-      "Seamless visual transitions between 3D renders and UI designs",
-      "Web-optimized 1080p H.264 export for smooth online playback",
-      "Maintained modular .aep project file with non-destructive composition structure",
-    ],
-    role: "Motion Designer & Video Editor — storyboarded narrative flow, animated graphical layers, and mastered audio.",
-    previewGradient: "from-pink-900/60 via-indigo-900/40 to-neutral-900",
-    featured: false,
-  },
-];
+// ---------------------------------------------------------------- education & experience
 
 /** @type {EducationItem[]} */
 export const educationData = [
   {
     institution: "NED University of Engineering and Technology",
-    degree: "Bachelor of Science in Computer Science",
-    specialization: "Specialization in Gaming and Animation",
-    timeline: "Undergraduate Program (In Progress)",
-    status: "Enrolled Undergraduate",
-    location: "Karachi, Pakistan",
-    description:
-      "Pursuing a specialized curriculum that unifies core computational principles (algorithms, data structures, graphics programming, systems design) with specialized studies in game development, real-time animation, interactive storytelling, and digital multimedia.",
-    relevantCoursework: [
-      "Computer Graphics & Real-Time Rendering",
-      "Game Design & Development Principles",
-      "3D Modeling, Rigging & Animation",
-      "Data Structures & Algorithms",
-      "Object-Oriented Programming (C++ & C#)",
-      "Human-Computer Interaction & UI/UX",
-      "Database Systems & Software Engineering",
-    ],
+    qualification: "Bachelor in Computer Science",
+    specialization: "Gaming and Animation",
+    dates: "August 2023 – August 2027",
+    status: "In progress",
+  },
+  {
+    institution: "Generations School",
+    qualification: "A Levels",
   },
 ];
 
 /** @type {ExperienceItem[]} */
 export const experienceData = [
   {
-    role: "Game Development & 3D Modeling Projects",
-    organization: "NED University Academic Portfolio",
-    type: "Academic",
-    timeline: "Ongoing",
+    organization: "MadForFilms",
+    role: "Trainee",
+    dates: "June 2026",
+    location: "Karachi",
     description:
-      "Designed and developed multiple interactive game prototypes and 3D assets exploring player psychology, resource allocation, and real-time mesh optimization.",
-    responsibilities: [
-      "Engineered game mechanics, player movement controllers, and event managers in Unity (C#).",
-      "Modeled, UV-unwrapped, and rigged 3D props and stylized character assets using Blender.",
-      "Conducted user testing sessions to iterate on HUD readability, player onboarding, and gameplay feel.",
-    ],
-    technologies: ["Unity", "C#", "Blender", "Git"],
+      "Hands-on training in filmmaking fundamentals, camera systems, and visual effects. Applied production techniques to develop and pitch a vertical-format story.",
   },
   {
-    role: "Multimedia & Visual Design Initiatives",
-    organization: "Student Creative & Technical Collaborations",
-    type: "Creative",
-    timeline: "Recent",
-    description:
-      "Produced digital design assets, branding collateral, and motion graphics for university academic showcases and digital events.",
-    responsibilities: [
-      "Created promotional motion clips and title sequences using Adobe After Effects and Premiere Pro.",
-      "Designed vector layouts, event posters, and visual presentation decks in Adobe Illustrator and Photoshop.",
-      "Structured UI/UX wireframes and game interface prototypes in Figma.",
-    ],
-    technologies: ["After Effects", "Photoshop", "Illustrator", "Figma"],
+    organization: "MLabs",
+    role: "Participant",
+    dates: "July 2024 – August 2024",
+    relatedProjectId: "sling-shot",
   },
   {
-    role: "Interactive 3D Web Development",
-    organization: "Personal & Capstone Exploration",
-    type: "Technical",
-    timeline: "Current",
-    description:
-      "Investigating the convergence of modern web frameworks and real-time graphics engines using Next.js and vanilla Three.js.",
-    responsibilities: [
-      "Building responsive, accessible web layouts using Next.js, JavaScript, and Tailwind CSS.",
-      "Developing a real-time Three.js world with GLB model loading, lighting, and shadows.",
-      "Maintaining modular architectures that separate data, 3D engine code and presentation views.",
-    ],
-    technologies: ["Next.js", "JavaScript", "Three.js", "Tailwind CSS"],
+    organization: "Stratesfy, Inc.",
+    role: "Intern",
+    dates: "January 2024 – June 2024",
+    location: "Karachi",
   },
 ];
+
+/** @type {AchievementItem[]} */
+export const achievementsData = [{ title: "Top 3 Finalist – Best Vertical Film", organization: "Micro Drama Lab" }];
+
+/** Shown after the creative and technical material, as a short secondary list. */
+export const certificationsData = ["Certificate of Achievement", "Essential Baking Course", "Instant Baking Course"];
+
+/** @type {LanguageItem[]} */
+export const languagesData = [
+  { language: "Urdu", level: "Native or bilingual" },
+  { language: "English", level: "Professional working" },
+];
+
+// ---------------------------------------------------------------- skills
+
+/**
+ * Six areas (the Technology Lab has one garden bed per area). Tools only: each
+ * one appears in the sources (profile summary, project technologies, this
+ * portfolio's own production).
+ * @type {SkillCategory[]}
+ */
+export const skillsCategories = [
+  { key: "gameDev", title: "Game Development", accent: "#A97FD8", skills: ["Unity", "C#", "C", "SDL"] },
+  { key: "threeD", title: "3D & Animation", accent: "#E07AA0", skills: ["Blender", "Three.js", "Adobe After Effects"] },
+  { key: "web", title: "Web Development", accent: "#7F88E0", skills: ["JavaScript", "React", "Next.js", "Vite", "Supabase", "Vercel"] },
+  {
+    key: "artDesign",
+    title: "Art & Design",
+    accent: "#E9A93B",
+    skills: ["Adobe Creative Suite", "Adobe Photoshop", "Adobe Illustrator", "Figma", "Acrylic painting", "Calligraphy"],
+  },
+  { key: "film", title: "Video & Motion", accent: "#A83A4B", skills: ["Adobe After Effects", "Filmmaking", "Camera systems", "Visual effects"] },
+  {
+    key: "software",
+    title: "Software & Networking",
+    accent: "#5FA39A",
+    skills: ["Python", "Cisco Packet Tracer", "OpenFlow", "ONOS", "Ryu", "Mininet"],
+  },
+];
+
+// ---------------------------------------------------------------- projects
+
+/** @type {ProjectCategoryInfo[]} */
+export const projectCategories = [
+  { id: "game", label: "Game Development", accent: "#A97FD8" },
+  { id: "web3d", label: "3D and Web Development", accent: "#7F88E0" },
+  { id: "software", label: "Software and Networking", accent: "#5FA39A" },
+  { id: "art", label: "Traditional Art", accent: "#E07AA0" },
+  { id: "design", label: "Graphic Design and Motion Work", accent: "#E9A93B" },
+];
+
+/** @type {Readonly<Record<string, ProjectCategoryInfo>>} */
+export const PROJECT_CATEGORY_BY_ID = Object.freeze(Object.fromEntries(projectCategories.map((c) => [c.id, c])));
+
+const IMG = "/images/projects";
+
+/**
+ * Order matters in the 3D world: the first featured project stands on the
+ * Arcade Hall stage, and the next three get the arcade cabinets.
+ * @type {Project[]}
+ */
+export const projectsData = [
+  // ---------------- featured
+  {
+    id: "moral-triage",
+    title: "Moral Triage",
+    category: "game",
+    summary:
+      "A narrative decision-making game about ethical dilemmas in a crisis: players allocate limited aid under time pressure, and every choice has consequences.",
+    details: [
+      "Branching narrative with multiple story outcomes.",
+      "Resource management with real-time consequences.",
+      "UI designed in Figma and built in Unity.",
+      "Low-poly environment assets and props modelled in Blender.",
+      "Atmospheric audio and tense situational pacing.",
+    ],
+    technologies: ["Unity", "C#", "Blender", "Figma", "Photoshop"],
+    featured: true,
+    source: "This repository",
+  },
+  {
+    id: "monster-runner",
+    title: "Monster Runner",
+    category: "game",
+    summary: "A 3D endless runner made in Unity by Team Unpaid for GameCon '26 at NED University TechFest '26.",
+    details: [
+      "Selectable playable monsters.",
+      "Dynamic obstacle spawning and coin collection.",
+      "AI enemies that chase the player.",
+      "Snow, desert, and water environments.",
+      "Survival-time scoring and a leaderboard.",
+      "Prototype pitched and demonstrated to judges and attendees at GameCon '26.",
+    ],
+    technologies: ["Unity", "C#"],
+    image: { src: `${IMG}/monster-runner.jpg`, alt: "Monster Runner: a green monster running along an icy track through the snow level" },
+    date: "October 2026 – Present",
+    team: "Team Unpaid",
+    context: "GameCon '26, NED University TechFest '26",
+    featured: true,
+    source: "LinkedIn",
+  },
+  {
+    id: "blockcraft",
+    title: "BlockCraft",
+    category: "web3d",
+    summary: "A browser-based, single-player 3D voxel sandbox where players explore, build, and customise block worlds.",
+    details: [
+      "3D world and block building with Three.js, React, and Vite.",
+      "Supabase authentication and cloud saves, so players can resume their worlds.",
+      "Deployed on Vercel.",
+    ],
+    technologies: ["Three.js", "React", "Vite", "Supabase", "Vercel"],
+    image: { src: `${IMG}/blockcraft.jpg`, alt: "BlockCraft dashboard: play time, blocks placed and broken, saved worlds and recent games" },
+    context: "NED University",
+    featured: true,
+    source: "LinkedIn",
+  },
+  {
+    id: "masketeer",
+    title: "Masketeer",
+    category: "game",
+    summary: "A 2D action-puzzle platformer with unique combat mechanics and a vibrant pixel-art style.",
+    technologies: ["Unity"],
+    image: { src: `${IMG}/masketeer.jpg`, alt: "Masketeer title screen: a pixel-art castle hall with a Play button" },
+    featured: true,
+    source: "muzna.zubairy.world",
+  },
+  {
+    id: "solar-system",
+    title: "3D Interactive Solar System Simulation",
+    category: "web3d",
+    summary: "An interactive 3D model of the Solar System in the browser, showing planetary rotation, orbits, and meteor movement.",
+    details: [
+      "Planetary rotation, orbital paths, and meteor movement.",
+      "Custom textures, lighting, and emissive glow for the Sun and planets.",
+      "Lightweight browser rendering with Three.js and Vite.",
+    ],
+    technologies: ["Three.js", "Vite"],
+    image: { src: `${IMG}/solar-system.jpg`, alt: "Solar System simulation: the Sun and planets on their orbits, with an information panel about Jupiter" },
+    context: "NED University",
+    featured: true,
+    source: "LinkedIn",
+  },
+  {
+    id: "findit",
+    title: "FindIt — Campus Lost & Found Platform",
+    category: "web3d",
+    summary: "A lost-and-found web platform for the NED University campus community.",
+    details: [
+      "Lost and found reports with a title, description, photo, and last-known campus location.",
+      "Duplicate-report detection.",
+      "Admin moderation dashboard.",
+    ],
+    technologies: ["React", "Supabase"],
+    image: { src: `${IMG}/findit.jpg`, alt: "FindIt student profile page with personal details blurred, showing a lost-item report" },
+    contributors: ["Ifrah", "Mashal", "two other contributors"],
+    context: "NED University",
+    featured: true,
+    source: "LinkedIn",
+  },
+
+  // ---------------- game development
+  {
+    id: "trivia-quiz",
+    title: "Trivia Quiz Game",
+    category: "game",
+    summary: "A console trivia quiz game with subject selection and multiple-choice questions.",
+    contribution: "UI/UX design, including the menu, leaderboard, and console interfaces, in Figma.",
+    technologies: ["Figma"],
+    image: { src: `${IMG}/trivia-quiz.jpg`, alt: "Trivia Quiz console screen: a multiple-choice question with a score bar" },
+    date: "September 2025 – November 2025",
+    contributors: ["Zainab Kinza", "Areefa"],
+    context: "NED University",
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "apollo-and-artimis",
+    title: "Apollo and Artimis",
+    category: "game",
+    summary: "A game built in C with SDL.",
+    contribution: "Game mechanics and visual assets.",
+    technologies: ["C", "SDL"],
+    image: { src: `${IMG}/apollo-and-artimis.jpg`, alt: "Title art reading Artemis & Apollo over a painted background" },
+    contributors: ["Mashal", "Zarina"],
+    context: "NED University",
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "beaky-bounce",
+    title: "Beaky Bounce",
+    category: "game",
+    summary: "A bird-themed arcade game built in C with SDL.",
+    contribution: "Character designs and game art.",
+    technologies: ["C", "SDL"],
+    image: { src: `${IMG}/beaky-bounce.jpg`, alt: "Beaky Bounce: a pixel-art bird flying between pillars under the game's logo" },
+    contributors: ["Aasia", "Naverah"],
+    context: "NED University",
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "crimson-bastion",
+    title: "Crimson Bastion",
+    category: "game",
+    summary: "A game built with SDL, with art made in Photoshop.",
+    contribution: "Menu systems and level environments with a cohesive visual style.",
+    technologies: ["Adobe Photoshop", "SDL"],
+    image: { src: `${IMG}/crimson-bastion.jpg`, alt: "Crimson Bastion pixel-art main menu with Start, Credits and Quit buttons" },
+    contributors: ["Aasia", "Ifrah"],
+    context: "NED University",
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "red-at-war",
+    title: "Red at War",
+    category: "game",
+    summary: "An action game.",
+    contribution: "Character concepts and environment art.",
+    technologies: ["Adobe Photoshop", "Python"],
+    image: { src: `${IMG}/red-at-war.jpg`, alt: "Pixel-art group of green and blue aliens in white lab coats against a purple sky" },
+    context: "NED University",
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "sling-shot",
+    title: "Sling Shot / Heist the Bags",
+    category: "game",
+    summary: "A Unity mobile game made at MLabs.",
+    contribution: "Game assets and UI elements.",
+    technologies: ["Unity", "Adobe Illustrator"],
+    image: { src: `${IMG}/sling-shot.jpg`, alt: "Heist the Bags phone gameplay: a level with hanging money bags and a robber" },
+    contributors: ["Hadia"],
+    context: "MLabs",
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "tiny-triads",
+    title: "Tiny Triads",
+    category: "game",
+    summary: "Three games in one package.",
+    contribution: "A puzzle game featuring triad mechanics.",
+    technologies: ["Adobe Photoshop", "SDL"],
+    image: { src: `${IMG}/tiny-triads.jpg`, alt: "Tiny Triads menu collage with a play button and game tiles" },
+    contributors: ["Mashal", "Aasia", "one other contributor"],
+    context: "NED University",
+    featured: false,
+    source: "LinkedIn",
+  },
+
+  // ---------------- 3D and web
+  {
+    id: "creative-world",
+    title: "Muzna's Creative World",
+    category: "web3d",
+    summary: "This portfolio: an explorable 3D island in the browser, visited as a cat. Each location opens a section of the portfolio.",
+    details: [
+      "3D world rendered with vanilla Three.js inside a Next.js application.",
+      "Cat avatar modelled, rigged, and animated in Blender, loaded as GLB files.",
+      "Eight locations, each opening a portfolio panel; a menu opens the same panels directly.",
+      "Promotional video made in Adobe After Effects, shown in the Cinema.",
+    ],
+    technologies: ["Next.js", "React", "JavaScript", "Three.js", "Tailwind CSS", "Framer Motion", "Blender", "Adobe After Effects"],
+    featured: false,
+    source: "This repository",
+  },
+
+  // ---------------- software and networking
+  {
+    id: "dermacare",
+    title: "DermaCare — Skin & Hair Symptom Triage System",
+    category: "software",
+    summary: "A Python triage prototype that matches selected skin and hair symptoms to possible conditions and suggests next steps.",
+    details: [
+      "Rule-based symptom-to-condition matching and ranking.",
+      "Urgency flagging for symptoms that need prompt attention.",
+      "Next-step guidance after each evaluation.",
+      "A knowledge base designed to be extended with more conditions.",
+    ],
+    technologies: ["Python"],
+    image: { src: `${IMG}/dermacare.jpg`, alt: "DermaCare symptom checklist: skin symptoms, hair and nail changes, background and history" },
+    contributors: ["Iffat", "Mashal"],
+    context: "NED University",
+    note: "Educational prototype only: not a medical diagnostic tool and not a replacement for a qualified healthcare practitioner.",
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "enterprise-routing",
+    title: "Enterprise Routing & Switching Design",
+    category: "software",
+    summary: "Enterprise network topologies designed, configured, and tested in Cisco Packet Tracer.",
+    details: ["Multi-router and multi-switch topologies.", "Static and dynamic routing.", "VLANs and inter-VLAN routing."],
+    technologies: ["Cisco Packet Tracer"],
+    context: "NED University",
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "sdn-routing",
+    title: "SDN Controller & Shortest-Path Routing",
+    category: "software",
+    summary: "Software-defined network simulations with shortest-path routing between switches.",
+    details: [
+      "OpenFlow 1.3 networks with the ONOS and Ryu controllers.",
+      "Custom topologies emulated in Mininet and MiniEdit.",
+      "Dijkstra shortest-path routing in Python (Ryu), with link-failure handling.",
+    ],
+    technologies: ["Python", "OpenFlow", "ONOS", "Ryu", "Mininet"],
+    image: { src: `${IMG}/sdn-routing.jpg`, alt: "Ryu topology viewer showing three connected switches" },
+    context: "NED University",
+    featured: false,
+    source: "LinkedIn",
+  },
+
+  // ---------------- traditional art
+  {
+    id: "acrylic-painting",
+    title: "Acrylic Painting & Visual Art Portfolio",
+    category: "art",
+    summary: "Original acrylic paintings on canvas: landscapes, portraits, and abstract work.",
+    details: ["Layering, blending, texture building, and brushwork.", "Colour harmony, lighting, and perspective in composition."],
+    technologies: ["Acrylic on canvas"],
+    image: { src: `${IMG}/acrylic-painting.jpg`, alt: "Acrylic painting: Arabic calligraphy in black on a red canvas with two white bands" },
+    featured: false,
+    source: "LinkedIn",
+  },
+  {
+    id: "calligraphy",
+    title: "Calligraphy & Hand-Lettering Portfolio",
+    category: "art",
+    summary: "Original calligraphic pieces in traditional and modern scripts.",
+    technologies: ["Calligraphy", "Hand-lettering"],
+    image: { src: `${IMG}/calligraphy.jpg`, alt: "Arabic letters written in ink on paper" },
+    featured: false,
+    source: "LinkedIn",
+  },
+
+  // ---------------- graphic design and motion
+  {
+    id: "youtube-thumbnails",
+    title: "YouTube Thumbnail Design",
+    category: "design",
+    summary: "Thumbnail designs for various YouTube videos.",
+    technologies: ["Adobe Photoshop"],
+    image: { src: `${IMG}/youtube-thumbnails.jpg`, alt: "A before-and-after style YouTube thumbnail featuring the video's subject" },
+    note: "Thumbnail design work: the person in the photograph is the video's subject, not Muzna.",
+    featured: false,
+    source: "muzna.zubairy.world",
+  },
+  {
+    id: "fish",
+    title: "Fish — 2D Character Design",
+    category: "design",
+    summary: "A simple 2D fish character design.",
+    technologies: ["Adobe Illustrator"],
+    image: { src: `${IMG}/fish.jpg`, alt: "Three stylised fish characters in orange, teal and dark blue" },
+    featured: false,
+    source: "muzna.zubairy.world",
+  },
+  {
+    id: "one-more",
+    title: "One More — 2D Character Design",
+    category: "design",
+    summary: "A simple 2D character design.",
+    technologies: ["Adobe Illustrator"],
+    image: { src: `${IMG}/one-more.jpg`, alt: "Illustrated living room with a sofa and a wall clock showing nine o'clock" },
+    featured: false,
+    source: "muzna.zubairy.world",
+  },
+  {
+    id: "video-editing",
+    title: "Video Editing and Motion Graphics",
+    category: "design",
+    summary: "Video editing and motion graphics: three YouTube videos and two Canva designs.",
+    technologies: [],
+    image: { src: `${IMG}/video-editing.jpg`, alt: "Frame from one of the videos: an owl on a pile of stickers" },
+    links: [
+      { label: "Video 1 (YouTube)", url: "https://www.youtube.com/watch?v=RbK0XpS1v6I" },
+      { label: "Video 2 (YouTube)", url: "https://www.youtube.com/watch?v=uklSdIO04cw" },
+      { label: "Video 3 (YouTube)", url: "https://www.youtube.com/watch?v=kA64OzM9xc4" },
+      { label: "Canva design 1", url: "https://www.canva.com/design/DAHEHECF9HU/cpDvKXRz4sAvNcL2Swgtqw/view" },
+      { label: "Canva design 2", url: "https://www.canva.com/design/DAHBjfYKiCs/yCDwe5H4MmcznqmJymhTMw/view" },
+    ],
+    featured: false,
+    source: "muzna.zubairy.world",
+  },
+];
+
+/** @type {Readonly<Record<string, Project>>} */
+export const PROJECT_BY_ID = Object.freeze(Object.fromEntries(projectsData.map((p) => [p.id, p])));

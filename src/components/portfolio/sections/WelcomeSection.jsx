@@ -1,8 +1,8 @@
-import { SITE } from "@/constants/site";
+import { profileData } from "@/data/portfolioData";
 import { SECTIONS } from "@/data/portfolioSections";
 import { ZONE_BY_ID } from "@/data/worldLayout";
 
-import { Block, Lead, Placeholder } from "./shared";
+import { Block, Lead } from "./shared";
 
 const CONTROLS = /** @type {const} */ ([
   ["W / ↑", "Walk forward"],
@@ -15,12 +15,17 @@ const CONTROLS = /** @type {const} */ ([
   ["Esc", "Close a panel"],
 ]);
 
-/** Welcome Plaza: what this place is and how to get around. */
+/** Welcome Plaza: who this world belongs to, and how to get around. */
 export function WelcomeSection() {
   return (
     <div className="space-y-6">
-      <Lead>{SITE.description}</Lead>
-      <Placeholder>A personal welcome from Muzna will go here.</Placeholder>
+      <section className="space-y-2">
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-lamp">Welcome to the world of</p>
+        <p className="font-display text-3xl font-bold tracking-tight text-fg">{profileData.name}</p>
+        <p className="text-sm leading-relaxed text-lavender">{profileData.headline}</p>
+      </section>
+      <Lead>{profileData.summary.join(" ")}</Lead>
+      <p className="text-sm text-muted">{profileData.studies}</p>
 
       <Block title="How to explore">
         <p className="text-sm leading-relaxed text-muted">
