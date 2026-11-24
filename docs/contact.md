@@ -8,7 +8,8 @@ emails Muzna through [Resend](https://resend.com/docs).
 > Contact Station (production build, `onboarding@resend.dev`, Resend account
 > registered to the recipient) arrived at `zubairy4605986@cloud.neduet.edu.pk`.
 > The three Resend variables were added to Vercel (Production and Preview) on
-> 2026-11-24, so the live site sends too.
+> 2026-11-24. A test message sent through the live site's form the same day
+> arrived in the same inbox, so production delivery is verified too.
 
 ## How it works
 
