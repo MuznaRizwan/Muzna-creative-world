@@ -1,0 +1,19 @@
+Audio used in "Muzna's Creative World" promotional video
+=========================================================
+All files were downloaded from Mixkit (https://mixkit.co), which offers them free of charge
+for use in videos, including commercial and portfolio use, without attribution.
+  Music:         Mixkit Stock Music Free License
+  Sound effects: Mixkit Sound Effects Free License
+  Licence terms: https://mixkit.co/license/
+Check the licence named on each item's download page, and paste each item's page URL below.
+
+File                                         Type          Used at (video time)          Item page URL
+-------------------------------------------  ------------  ----------------------------  -------------
+music/mixkit-discover-587.mp3                Music         0:00-0:52 (fades in/out)
+sfx/mixkit-writing-pencil-3194.wav           Sound effect  0:00 (map drawing)
+sfx/mixkit-air-woosh-1489.wav                Sound effect  0:03 (world reveal)
+sfx/mixkit-walking-on-stones-loop-1269.wav   Sound effect  0:07-0:11 (cat walking)
+sfx/mixkit-electric-pop-2365.wav             Sound effect  0:08 (W A S D keys), 0:40 (project cards)
+sfx/mixkit-magical-swish-1496.wav            Sound effect  0:13-0:44 (9 scene cuts)
+sfx/mixkit-sea-waves-with-birds-loop-1185.wav Sound effect 0:26 (Contact), 0:48 (end card)
+sfx/mixkit-positive-interface-click-1112.wav Sound effect  0:32.7 (pressing E)

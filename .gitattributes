@@ -17,3 +17,7 @@
 *.mp3 binary
 *.ogg binary
 *.wasm binary
+*.blend binary
+*.aep binary
+*.wav binary
+*.zip binary

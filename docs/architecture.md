@@ -102,7 +102,7 @@ src/
 ├─ types/          JSDoc @typedef modules (no runtime code)
 └─ utils/          cn.js
 public/            models/, textures/, videos/, images/, audio/  (draco/ added with the cat model)
-art-source/        blender/, after-effects/  (git-ignored working files)
+art-source/        blender/ (.blend), after-effects/ (.aep, footage, scripts)
 supabase/          migrations/ (pgvector schema)
 scripts/           ingest-knowledge.mjs (portfolio → Supabase knowledge base)
 ```

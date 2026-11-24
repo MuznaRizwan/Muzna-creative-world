@@ -14,8 +14,8 @@ gives direct access to the same content, so nobody has to explore to read it.
 | Module | Where it lives |
 |---|---|
 | 1. 3D web portfolio | Vanilla Three.js world (`src/lib/three/`) with eight locations, plus React panels for Welcome, About, Skills, Projects, Education, Showreel, Portfolio assistant and Contact (`src/components/portfolio/`). Responsive: side drawer on desktop and tablet, bottom sheet on phones, touch joystick on touch screens. |
-| 2. Blender avatar | Muzna's cat, modelled, textured and rigged (Rigify) in Blender, exported to GLB (`public/models/Cat Muzna/`). Idle, walk, run and interaction animations drive it in the world. |
-| 3. After Effects video | 52-second promotional video (`public/videos/portfolio-intro.mp4`), shown on the Cinema screen, the Showreel panel and the studio easel. |
+| 2. Blender avatar | Muzna's cat, modelled, textured and rigged (Rigify) in Blender. Source: `art-source/blender/cat/*.blend`; exported GLBs: `public/models/Cat Muzna/Cat Muzna/`. Idle, walk, run and interaction animations drive it in the world. |
+| 3. After Effects video | 52-second promotional video (`public/videos/portfolio-intro.mp4`), shown on the Cinema screen, the Showreel panel and the studio easel. Source project: `art-source/after-effects/promotionalvideo.aep`. |
 | 4. RAG chatbot | Portfolio assistant: Gemini embeddings in Supabase pgvector, retrieval, and a grounded Gemini answer with source chips. See [docs/chatbot.md](docs/chatbot.md). |
 | 5. Email and contact | Contact Station form, validated in the browser and on the server, emailed through Resend with spam and rate limits. See [docs/contact.md](docs/contact.md). |
 | 6. Deployment | Vercel, deployed from the `dev` branch of this repository. |
@@ -114,11 +114,25 @@ public/             models/ (cat GLBs), videos/ (promo MP4), images/
 supabase/           pgvector migration (chatbot knowledge base)
 scripts/            ingest-knowledge.mjs, optimize-cat-clips.mjs
 docs/               architecture.md, chatbot.md, contact.md, screenshots/
-art-source/         Blender and After Effects working files (git-ignored; in the submission archive)
+art-source/         Blender (.blend) and After Effects (.aep) source files, see art-source/README.md
 ```
 
 How the engine and React share state, the physics approach and the asset pipeline are
 described in [docs/architecture.md](docs/architecture.md).
+
+## Assets
+
+| Asset | Source | Used on the site |
+|---|---|---|
+| Cat avatar | `art-source/blender/cat/Cat.blend` + four animation `.blend` files | `public/models/Cat Muzna/Cat Muzna/*.glb` |
+| Promotional video | `art-source/after-effects/promotionalvideo.aep` | `public/videos/portfolio-intro.mp4` |
+| Project images | Muzna's own screenshots and artwork | `public/images/projects/` |
+| Showreel poster | A frame of the promotional video | `public/images/showreel-poster.jpg` |
+| Studio painting | Muzna's acrylic painting | `public/images/studio-painting.jpg` |
+| Fonts | Google Fonts (SIL OFL), licences in `art-source/fonts/` | loaded with `next/font` |
+
+The video's Mixkit music and sound effects are not in the repository (their licence does not
+allow sharing the files); `art-source/after-effects/audio/LICENSES.txt` lists them.
 
 ## Screenshots
 

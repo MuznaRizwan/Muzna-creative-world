@@ -51,12 +51,19 @@ next-env.d.ts
 Adobe After Effects Auto-Save/
 .aeswap*
 
-# Art source files (Blender / After Effects) are separate deliverables
-/art-source/**
-!/art-source/
-!/art-source/README.md
-!/art-source/*/
-!/art-source/*/.gitkeep
+# Art source files: the .blend, .aep, footage, scripts and fonts are committed.
+# Left out: the lossless render (2.2 GB), AE logs, script logs, and the Mixkit
+# audio files (their licence allows use in the video, not redistribution;
+# art-source/after-effects/audio/LICENSES.txt lists each one).
+/art-source/after-effects/render/
+/art-source/after-effects/promotionalvideo.aep Logs/
+/art-source/after-effects/scripts/*-log.txt
+/art-source/after-effects/audio/**/*.mp3
+/art-source/after-effects/audio/**/*.wav
+# Font downloads (the site loads these fonts from Google; licences are kept)
+/art-source/fonts/**/*.zip
+/art-source/fonts/**/*.ttf
+/art-source/fonts/**/*.otf
 
 # chatbot knowledge preview (npm run ingest:preview)
 knowledge-preview.md
