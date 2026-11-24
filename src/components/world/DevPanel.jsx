@@ -12,8 +12,8 @@ import { useWorld } from "./WorldContext";
  * the follow camera and a free overview camera, and toggle the debug overlay.
  * Keyboard: 1–8 locations, 0 overview, C follow the cat, V inspect the cat
  * close up, G debug overlay.
- * (Movement keys are handled by the engine.) Replaced by the real navigation
- * and HUD in later phases.
+ * (Movement keys are handled by the engine.) Shown only in development, or
+ * on any build when the URL has `?dev` (see WorldCanvas.jsx).
  *
  * @param {{ engine: import("@/lib/three/Engine").Engine }} props
  */
@@ -64,12 +64,10 @@ export function DevPanel({ engine }) {
 
   return (
     <>
-      <div className="pointer-events-none absolute left-0 top-0 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
-        <h1 className="font-display text-base font-bold tracking-tight drop-shadow">Muzna&apos;s Creative World</h1>
-        <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-fg/80">
-          Preview · {following ? "follow camera" : "dev camera"}
-        </p>
-      </div>
+      {/* Under the site title (SiteTitle.jsx). */}
+      <p className="pointer-events-none absolute left-0 top-0 px-4 pt-[calc(max(1rem,env(safe-area-inset-top))+1.5rem)] font-mono text-[11px] uppercase tracking-[0.12em] text-fg/80">
+        Dev · {following ? "follow camera" : "dev camera"}
+      </p>
 
       <details
         open={open}

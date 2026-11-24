@@ -4,12 +4,21 @@ import { useEffect, useRef, useState } from "react";
 
 import { SiteMenu } from "@/components/navigation/SiteMenu";
 import { InteractionPrompt } from "@/components/overlays/InteractionPrompt";
+import { SiteTitle } from "@/components/overlays/SiteTitle";
+import { TouchControls } from "@/components/overlays/TouchControls";
 import { PortfolioPanel } from "@/components/portfolio/PortfolioPanel";
 import { createWorldState } from "@/lib/state/worldState";
 
 import { DevPanel } from "./DevPanel";
 import { WorldContext } from "./WorldContext";
 import { WorldError, WorldLoading } from "./WorldStatus";
+
+/** How long to wait for the browser to give the GPU context back before showing the error. */
+const CONTEXT_RESTORE_TIMEOUT_MS = 8000;
+
+/** The developer panel: always in `next dev`; on a build only with `?dev` in the URL. */
+const devToolsEnabled = () =>
+  process.env.NODE_ENV === "development" || new URLSearchParams(window.location.search).has("dev");
 
 /**
  * Client-only mount for the Three.js engine. The engine module is imported
@@ -31,6 +40,8 @@ export function WorldCanvas({ fallback, media }) {
   const [progress, setProgress] = useState(0);
   const [engine, setEngine] = useState(/** @type {import("@/lib/three/Engine").Engine | null} */ (null));
   const [errorMessage, setErrorMessage] = useState("");
+  const [devTools, setDevTools] = useState(false);
+  const [contextLost, setContextLost] = useState(false);
   const [state] = useState(createWorldState);
 
   useEffect(() => {
@@ -39,12 +50,28 @@ export function WorldCanvas({ fallback, media }) {
     let cancelled = false;
     /** @type {import("@/lib/three/Engine").Engine | null} */
     let instance = null;
+    /** @type {number | undefined} */
+    let restoreTimer;
 
     const fail = (/** @type {unknown} */ error) => {
       if (cancelled) return;
       console.error(error);
       setErrorMessage(error instanceof Error ? error.message : "The 3D view failed to start.");
       setStatus("error");
+    };
+
+    // A lost GPU context usually comes back within a moment: keep the
+    // interface (open panel, chat, form draft) and only show the error if it doesn't.
+    const onContextChange = (/** @type {boolean} */ lost) => {
+      if (cancelled) return;
+      window.clearTimeout(restoreTimer);
+      setContextLost(lost);
+      if (lost) {
+        restoreTimer = window.setTimeout(
+          () => fail(new Error("The 3D view was interrupted by the browser and couldn't be restored.")),
+          CONTEXT_RESTORE_TIMEOUT_MS
+        );
+      }
     };
 
     (async () => {
@@ -65,11 +92,13 @@ export function WorldCanvas({ fallback, media }) {
             if (!cancelled) setProgress(ratio);
           },
           onError: fail,
+          onContextChange,
         });
         const ready = await instance.init();
         if (cancelled || !ready) return;
         instance.start();
         setEngine(instance);
+        setDevTools(devToolsEnabled());
         setStatus("ready");
         if (process.env.NODE_ENV === "development") {
           /** @type {any} */ (window).__creativeWorld = instance;
@@ -81,6 +110,7 @@ export function WorldCanvas({ fallback, media }) {
 
     return () => {
       cancelled = true;
+      window.clearTimeout(restoreTimer);
       instance?.dispose();
       // A remount starts from a clean slate (no stale focus or open panel).
       state.setState({ focus: null, panel: null, catReady: false });
@@ -99,11 +129,21 @@ export function WorldCanvas({ fallback, media }) {
       {status === "error" && <WorldError message={errorMessage} />}
       {status === "ready" && engine && (
         <WorldContext.Provider value={{ state, engine, media }}>
-          <DevPanel engine={engine} />
+          <SiteTitle />
+          {devTools && <DevPanel engine={engine} />}
           <InteractionPrompt />
+          <TouchControls />
           <SiteMenu />
           <PortfolioPanel />
         </WorldContext.Provider>
+      )}
+      {status === "ready" && contextLost && (
+        <p
+          role="status"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-line bg-glass/90 px-4 py-2 text-sm text-fg shadow-lg backdrop-blur"
+        >
+          Restoring the 3D view…
+        </p>
       )}
     </div>
   );

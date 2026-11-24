@@ -27,7 +27,8 @@ import { World } from "./world/World";
  * @property {import("@/lib/state/worldState").WorldStateStore} state  Shared with the HTML interface.
  * @property {import("@/constants/assets").MediaFlags} [media] Which optional media files exist (the cinema screen uses them).
  * @property {(ratio: number) => void} [onProgress] Loading progress 0–1.
- * @property {(error: Error) => void} [onError] Fatal runtime errors (e.g. lost WebGL context).
+ * @property {(error: Error) => void} [onError] Fatal runtime errors.
+ * @property {(lost: boolean) => void} [onContextChange] The GPU context was lost (true) or restored (false).
  */
 
 /**
@@ -56,16 +57,21 @@ export class Engine {
    * @param {HTMLElement} container
    * @param {EngineOptions} options
    */
-  constructor(container, { state, media, onProgress, onError }) {
+  constructor(container, { state, media, onProgress, onError, onContextChange }) {
     this.container = container;
     this.state = state;
     this.media = media ?? { showreel: false, showreelPoster: false, studioPainting: false };
     this.onProgress = onProgress ?? (() => {});
     this.onError = onError ?? (() => {});
+    this.onContextChange = onContextChange ?? (() => {});
     this.disposed = false;
     this.running = false;
     /** Whether the loop should run when the tab is visible. */
     this.wantsToRun = false;
+    /** A panel covers (almost) the whole view on a narrow screen: don't render behind it. */
+    this.pausedForPanel = false;
+    /** The browser took the GPU context away; waiting for it to come back. */
+    this.contextLost = false;
     this.debugVisible = false;
     this.tracker = new ResourceTracker();
     this.time = new Time(RENDER.maxDelta);
@@ -109,18 +115,24 @@ export class Engine {
     this.frame = this.frame.bind(this);
     this.handleVisibility = this.handleVisibility.bind(this);
     this.handleContextLost = this.handleContextLost.bind(this);
+    this.handleContextRestored = this.handleContextRestored.bind(this);
     document.addEventListener("visibilitychange", this.handleVisibility);
     this.canvas.addEventListener("webglcontextlost", this.handleContextLost);
+    this.canvas.addEventListener("webglcontextrestored", this.handleContextRestored);
 
-    // Opening or closing a portfolio panel locks or frees the cat.
+    // Opening or closing a portfolio panel locks or frees the cat, and on
+    // phones pauses rendering behind the panel.
     this.unsubscribeState = state.subscribe((next, previous) => {
-      if (next.panel !== previous.panel) this.applyControlLock();
+      if (next.panel === previous.panel) return;
+      this.applyControlLock();
+      this.applyPanelPause();
     });
 
     this.viewport = new Viewport(container, (size) => {
       this.renderer.setPixelRatio(size.pixelRatio);
       this.renderer.setSize(size.width, size.height, false);
       this.devCamera.setAspect(size.width / size.height);
+      this.applyPanelPause(); // rotating a phone can change whether the panel covers the view
     });
   }
 
@@ -288,9 +300,22 @@ export class Engine {
     if (this.player && this.controlsFree) this.player.interact();
   }
 
+  /**
+   * The on-screen joystick (touch screens): the same input the keys feed.
+   * @param {{ move: number, turn: number, run: boolean }} stick
+   */
+  setTouchStick(stick) {
+    this.input.setVirtual(stick);
+  }
+
+  /** The on-screen jump button. */
+  requestJump() {
+    this.input.press("jump");
+  }
+
   start() {
     this.wantsToRun = true;
-    if (this.disposed || this.running || document.hidden) return;
+    if (this.disposed || this.running || document.hidden || this.pausedForPanel || this.contextLost) return;
     this.running = true;
     this.time.reset();
     this.fpsWindowStart = performance.now();
@@ -345,11 +370,41 @@ export class Engine {
     else if (this.wantsToRun) this.start();
   }
 
-  /** @param {Event} event */
+  /**
+   * On narrow screens the portfolio panel is a bottom sheet over most of the
+   * view (see PortfolioPanel.jsx, below the `md` breakpoint), so the world
+   * isn't rendered behind it; the last frame stays on screen. On wider
+   * screens the panel sits beside the world, which keeps running.
+   */
+  applyPanelPause() {
+    if (this.disposed) return;
+    const covered = this.state.getState().panel !== null && window.matchMedia("(max-width: 767.98px)").matches;
+    if (covered === this.pausedForPanel) return;
+    this.pausedForPanel = covered;
+    if (covered) this.stop({ keepIntent: true });
+    else if (this.wantsToRun) this.start();
+  }
+
+  /**
+   * The browser took the GPU context away (driver reset, too many contexts, a
+   * backgrounded tab). Calling preventDefault() asks it to give one back;
+   * until then the loop waits. The UI stays mounted.
+   * @param {Event} event
+   */
   handleContextLost(event) {
     event.preventDefault();
-    this.stop();
-    this.onError(new Error("The WebGL context was lost."));
+    this.contextLost = true;
+    this.stop({ keepIntent: true });
+    this.onContextChange(true);
+  }
+
+  /** Three.js re-creates its GPU state and re-uploads meshes and textures on the next frame. */
+  handleContextRestored() {
+    if (this.disposed) return;
+    this.contextLost = false;
+    this.renderer.shadowMap.needsUpdate = true;
+    this.onContextChange(false);
+    if (this.wantsToRun) this.start();
   }
 
   // ---- Navigation (temporary dev panel) ----
@@ -449,6 +504,7 @@ export class Engine {
     this.stop();
     document.removeEventListener("visibilitychange", this.handleVisibility);
     this.canvas.removeEventListener("webglcontextlost", this.handleContextLost);
+    this.canvas.removeEventListener("webglcontextrestored", this.handleContextRestored);
     this.viewport.dispose();
     this.unsubscribeState();
     this.input.dispose();
