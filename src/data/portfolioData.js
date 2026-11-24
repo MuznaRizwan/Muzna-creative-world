@@ -164,6 +164,10 @@ export const projectsData = [
       "Atmospheric audio and tense situational pacing.",
     ],
     technologies: ["Unity", "C#", "Blender", "Figma", "Photoshop"],
+    image: {
+      src: `${IMG}/moral-triage.jpg`,
+      alt: "Moral Triage main menu, a hospital ethics simulator: Play, Shop, Build, Settings and Exit beside a doctor reading a tablet in a hospital corridor",
+    },
     featured: true,
     source: "This repository",
   },
@@ -354,6 +358,10 @@ export const projectsData = [
       "Promotional video made in Adobe After Effects, shown in the Cinema.",
     ],
     technologies: ["Next.js", "React", "JavaScript", "Three.js", "Tailwind CSS", "Framer Motion", "Blender", "Adobe After Effects"],
+    image: {
+      src: `${IMG}/creative-world.jpg`,
+      alt: "The cat in its red jacket at Welcome Plaza, framed by the gate pillars, with signposts to the other locations",
+    },
     featured: false,
     source: "This repository",
   },
