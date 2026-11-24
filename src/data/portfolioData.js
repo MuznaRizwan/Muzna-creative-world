@@ -393,6 +393,10 @@ export const projectsData = [
     summary: "Enterprise network topologies designed, configured, and tested in Cisco Packet Tracer.",
     details: ["Multi-router and multi-switch topologies.", "Static and dynamic routing.", "VLANs and inter-VLAN routing."],
     technologies: ["Cisco Packet Tracer"],
+    image: {
+      src: `${IMG}/enterprise-routing.jpg`,
+      alt: "Cisco Packet Tracer topology: three 2911 routers, R1, R2 and R3, in a chain, with PC0 connected to R1 and PC1 to R3",
+    },
     context: "NED University",
     featured: false,
     source: "LinkedIn",
