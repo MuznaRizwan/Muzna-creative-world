@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-/* Superseded prototype code is not part of the app. */
-@source not "../../archive";
-
 /*
  * Design tokens from the approved Phase 2 creative direction (interface palette).
  * World/environment colours will live with the 3D code, not here.

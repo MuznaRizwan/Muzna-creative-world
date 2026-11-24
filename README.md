@@ -57,7 +57,6 @@ public/             models/, textures/, videos/, images/, audio/
 art-source/         Blender and After Effects working files (git-ignored, not served)
 supabase/           pgvector migration
 docs/               architecture.md
-archive/            Superseded prototype code, kept for reference; not built or linted
 ```
 
 The full planned structure, the engine/React boundary and the physics approach are

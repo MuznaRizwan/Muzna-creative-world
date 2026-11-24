@@ -99,7 +99,6 @@ src/
 └─ utils/          cn.js
 public/            models/, textures/, videos/, images/, audio/  (draco/ added with the cat model)
 art-source/        blender/, after-effects/  (git-ignored working files)
-archive/           superseded R3F/TypeScript prototype; not built, linted or imported
 supabase/          migrations/ (pgvector schema)
 ```
 

@@ -7,7 +7,5 @@ export default defineConfig([
     ".next/**",
     "out/**",
     "build/**",
-    // Superseded R3F/TypeScript prototype, kept for reference only.
-    "archive/**",
   ]),
 ]);
