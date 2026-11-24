@@ -64,3 +64,7 @@ knowledge-preview.md
 # personal source material and design references (not part of the site)
 /profile/
 /visual_direction.pdf
+
+# Submission archive (large binaries; built locally)
+/submission/
+/submission-archive/
