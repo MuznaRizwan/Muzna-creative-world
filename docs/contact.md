@@ -7,8 +7,8 @@ emails Muzna through [Resend](https://resend.com/docs).
 > **Status (2026-11-24):** delivery verified locally. A real message sent from the
 > Contact Station (production build, `onboarding@resend.dev`, Resend account
 > registered to the recipient) arrived at `zubairy4605986@cloud.neduet.edu.pk`.
-> Production (Vercel) delivery is not switched on yet: the Resend variables are
-> added there only when Muzna decides to go live (step 6).
+> The three Resend variables were added to Vercel (Production and Preview) on
+> 2026-11-24, so the live site sends too.
 
 ## How it works
 

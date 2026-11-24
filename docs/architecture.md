@@ -68,9 +68,9 @@ src/
 │  └─ api/         chat/ (portfolio assistant, see docs/chatbot.md), contact/ (Contact Station email, see docs/contact.md) route handlers
 ├─ components/     React only (see src/components/README.md)
 │  ├─ ui/  layout/  world/ (WorldCanvas, context, status, dev panel, fallback)
-│  ├─ overlays/    InteractionPrompt; location label, minimap planned
+│  ├─ overlays/    SiteTitle, InteractionPrompt ("Press E" / "Tap"), TouchControls (joystick, jump)
 │  ├─ navigation/  SiteMenu (conventional navigation to every section)
-│  └─ portfolio/   PortfolioPanel + sections/ (one view per section, placeholders for now)
+│  └─ portfolio/   PortfolioPanel + sections/ (one view per section)
 ├─ lib/
 │  ├─ three/       vanilla Three.js engine, no React (Phase 4)
 │  │  ├─ Engine.js        renderer, scene, loop, resize, visibility pause, camera modes, dispose
