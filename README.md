@@ -45,11 +45,11 @@ Imports use the `@/` alias for `src/` (configured in `jsconfig.json`).
 ```text
 src/
 ├── app/            Routes, root layout, fonts, global CSS, loading/error/404 pages
-│   └── api/        chat (portfolio assistant), contact (stub until its phase)
+│   └── api/        chat (portfolio assistant), contact (Contact Station email via Resend)
 ├── components/     React components only: ui/, layout/, world/, overlays/,
 │                   navigation/, portfolio/
 ├── lib/            three/ (engine), physics/, state/, ai/ (Gemini), rag/ (chatbot), chat/,
-│                   server/, supabase/, email/
+│                   contact/, server/, supabase/, email/
 ├── data/           Portfolio content (also the chatbot's source of truth)
 ├── constants/      Site identity, asset paths
 ├── types/          JSDoc type definitions
@@ -58,7 +58,7 @@ public/             models/, textures/, videos/, images/, audio/
 art-source/         Blender and After Effects working files (git-ignored, not served)
 supabase/           pgvector migration (chatbot knowledge base)
 scripts/            ingest-knowledge.mjs (npm run ingest)
-docs/               architecture.md, chatbot.md (assistant setup)
+docs/               architecture.md, chatbot.md (assistant setup), contact.md (email setup)
 ```
 
 The full planned structure, the engine/React boundary and the physics approach are

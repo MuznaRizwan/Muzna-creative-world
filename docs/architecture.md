@@ -65,7 +65,7 @@ with `hooks/useStore.js`:
 ```text
 src/
 ├─ app/            layout.jsx, page.jsx, globals.css, fonts.js, loading/error/global-error/not-found.jsx
-│  └─ api/         chat/ (portfolio assistant, see docs/chatbot.md), contact/ route handlers
+│  └─ api/         chat/ (portfolio assistant, see docs/chatbot.md), contact/ (Contact Station email, see docs/contact.md) route handlers
 ├─ components/     React only (see src/components/README.md)
 │  ├─ ui/  layout/  world/ (WorldCanvas, context, status, dev panel, fallback)
 │  ├─ overlays/    InteractionPrompt; location label, minimap planned
@@ -91,13 +91,14 @@ src/
 │  ├─ ai/          gemini.js (embeddings + generation over fetch, server only)
 │  ├─ rag/         knowledge.js (portfolio → chunks), retrieve.js (pgvector), prompt.js (rules)
 │  ├─ chat/        chatStore.js (conversation in the browser)
+│  ├─ contact/     validation.js (shared form rules), emailTemplate.js (escaped HTML + text)
 │  ├─ server/      rateLimit.js
 │  ├─ supabase/    server.js (service-role client)
-│  └─ email/       resend.js
+│  └─ email/       resend.js (Resend sending, server only)
 ├─ hooks/          useStore (subscribe to a store slice)
 ├─ data/           portfolioData.js (content), portfolioSections.js,
 │                  interactables.js, worldLayout.js
-├─ constants/      site.js, assets.js, chat.js
+├─ constants/      site.js, assets.js, chat.js, contact.js
 ├─ types/          JSDoc @typedef modules (no runtime code)
 └─ utils/          cn.js
 public/            models/, textures/, videos/, images/, audio/  (draco/ added with the cat model)

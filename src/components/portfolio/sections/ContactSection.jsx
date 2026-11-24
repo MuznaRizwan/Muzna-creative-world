@@ -2,13 +2,12 @@ import { Mail } from "lucide-react";
 
 import { contactData } from "@/data/portfolioData";
 
-import { Block, Lead, LinkButton, Placeholder } from "./shared";
-
-const FIELD = "w-full rounded-lg border border-line bg-raised/60 px-3 py-2 text-sm text-fg placeholder:text-muted disabled:opacity-60";
+import { ContactForm } from "./ContactForm";
+import { Block, Lead, LinkButton } from "./shared";
 
 /**
- * Contact Station: Muzna's email and profiles, and the contact form's layout.
- * Sending (email via Resend) is a later phase, so the fields are disabled.
+ * Contact Station: Muzna's email and profiles, and the contact form, which
+ * emails her through /api/contact (Resend).
  */
 export function ContactSection() {
   return (
@@ -35,26 +34,9 @@ export function ContactSection() {
         </div>
       </Block>
 
-      <Placeholder>The contact form isn&apos;t connected yet. Sending messages will be added in a later version.</Placeholder>
-      <form className="space-y-3" onSubmit={(event) => event.preventDefault()}>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="space-y-1 text-xs text-muted">
-            <span>Name</span>
-            <input disabled className={FIELD} autoComplete="name" />
-          </label>
-          <label className="space-y-1 text-xs text-muted">
-            <span>Email</span>
-            <input disabled type="email" className={FIELD} autoComplete="email" />
-          </label>
-        </div>
-        <label className="block space-y-1 text-xs text-muted">
-          <span>Message</span>
-          <textarea disabled rows={4} className={FIELD} />
-        </label>
-        <button type="submit" disabled className="rounded-lg bg-lavender px-4 py-2 text-sm font-semibold text-ink disabled:opacity-40">
-          Send message
-        </button>
-      </form>
+      <Block title="Send a message">
+        <ContactForm />
+      </Block>
     </div>
   );
 }
