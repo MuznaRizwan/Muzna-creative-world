@@ -65,9 +65,9 @@ with `hooks/useStore.js`:
 ```text
 src/
 ├─ app/            layout.jsx, page.jsx, globals.css, fonts.js, loading/error/global-error/not-found.jsx
-│  └─ api/         chat/, contact/, ingest/ route handlers
+│  └─ api/         chat/ (portfolio assistant, see docs/chatbot.md), contact/ route handlers
 ├─ components/     React only (see src/components/README.md)
-│  ├─ ui/  layout/  chatbot/  world/ (WorldCanvas, context, status, dev panel, fallback)
+│  ├─ ui/  layout/  world/ (WorldCanvas, context, status, dev panel, fallback)
 │  ├─ overlays/    InteractionPrompt; location label, minimap planned
 │  ├─ navigation/  SiteMenu (conventional navigation to every section)
 │  └─ portfolio/   PortfolioPanel + sections/ (one view per section, placeholders for now)
@@ -88,18 +88,22 @@ src/
 │  │  └─ interactions/    InteractionSystem (focus, E to interact, handlers per object/zone)
 │  ├─ physics/     CollisionWorld (boxes, ground, boundary, walkways, raycast), CharacterController
 │  ├─ state/       createStore, worldState (engine ↔ React)
-│  ├─ ai/          planned: embeddings and RAG pipeline
+│  ├─ ai/          gemini.js (embeddings + generation over fetch, server only)
+│  ├─ rag/         knowledge.js (portfolio → chunks), retrieve.js (pgvector), prompt.js (rules)
+│  ├─ chat/        chatStore.js (conversation in the browser)
+│  ├─ server/      rateLimit.js
 │  ├─ supabase/    server.js (service-role client)
 │  └─ email/       resend.js
 ├─ hooks/          useStore (subscribe to a store slice)
-├─ data/           portfolioData.js, portfolio-knowledge.js (content), portfolioSections.js,
+├─ data/           portfolioData.js (content), portfolioSections.js,
 │                  interactables.js, worldLayout.js
-├─ constants/      site.js, assets.js
+├─ constants/      site.js, assets.js, chat.js
 ├─ types/          JSDoc @typedef modules (no runtime code)
 └─ utils/          cn.js
 public/            models/, textures/, videos/, images/, audio/  (draco/ added with the cat model)
 art-source/        blender/, after-effects/  (git-ignored working files)
 supabase/          migrations/ (pgvector schema)
+scripts/           ingest-knowledge.mjs (portfolio → Supabase knowledge base)
 ```
 
 ## Engine lifecycle rules

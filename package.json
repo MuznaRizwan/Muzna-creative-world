@@ -10,7 +10,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ingest:preview": "node --env-file-if-exists=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ingest-knowledge.mjs --dry-run",
+    "ingest": "node --env-file-if-exists=.env.local --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ingest-knowledge.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

@@ -57,3 +57,10 @@ Adobe After Effects Auto-Save/
 !/art-source/README.md
 !/art-source/*/
 !/art-source/*/.gitkeep
+
+# chatbot knowledge preview (npm run ingest:preview)
+knowledge-preview.md
+
+# personal source material and design references (not part of the site)
+/profile/
+/visual_direction.pdf
