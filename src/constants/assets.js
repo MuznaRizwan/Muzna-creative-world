@@ -4,7 +4,17 @@
  */
 export const ASSET_PATHS = Object.freeze({
   introVideo: "/videos/portfolio-intro.mp4",
+  /** A frame of the intro video: the showreel panel's poster and the cinema screen before it plays. */
+  showreelPoster: "/images/showreel-poster.jpg",
+  /** Muzna's acrylic painting, shown on the Creative Studio's giant easel. */
+  studioPainting: "/images/studio-painting.jpg",
 });
+
+/**
+ * Which optional media files exist in /public (checked on the server, so the
+ * browser never requests a missing one).
+ * @typedef {{ showreel: boolean, showreelPoster: boolean, studioPainting: boolean }} MediaFlags
+ */
 
 const CAT_FOLDER = "/models/Cat Muzna/Cat Muzna";
 

@@ -414,7 +414,7 @@ export const projectsData = [
     summary: "Original acrylic paintings on canvas: landscapes, portraits, and abstract work.",
     details: ["Layering, blending, texture building, and brushwork.", "Colour harmony, lighting, and perspective in composition."],
     technologies: ["Acrylic on canvas"],
-    image: { src: `${IMG}/acrylic-painting.jpg`, alt: "Acrylic painting: Arabic calligraphy in black on a red canvas with two white bands" },
+    image: { src: `${IMG}/acrylic-painting.jpg`, alt: "Acrylic painting: silhouetted pine trees against a glowing teal moonlit sky, with two birds" },
     featured: false,
     source: "LinkedIn",
   },

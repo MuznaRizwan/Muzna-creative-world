@@ -25,6 +25,7 @@ import { World } from "./world/World";
 /**
  * @typedef {object} EngineOptions
  * @property {import("@/lib/state/worldState").WorldStateStore} state  Shared with the HTML interface.
+ * @property {import("@/constants/assets").MediaFlags} [media] Which optional media files exist (the cinema screen uses them).
  * @property {(ratio: number) => void} [onProgress] Loading progress 0–1.
  * @property {(error: Error) => void} [onError] Fatal runtime errors (e.g. lost WebGL context).
  */
@@ -55,9 +56,10 @@ export class Engine {
    * @param {HTMLElement} container
    * @param {EngineOptions} options
    */
-  constructor(container, { state, onProgress, onError }) {
+  constructor(container, { state, media, onProgress, onError }) {
     this.container = container;
     this.state = state;
+    this.media = media ?? { showreel: false, showreelPoster: false, studioPainting: false };
     this.onProgress = onProgress ?? (() => {});
     this.onError = onError ?? (() => {});
     this.disposed = false;
@@ -144,7 +146,7 @@ export class Engine {
     const cat = this.loadCat().catch((/** @type {unknown} */ error) => (error instanceof Error ? error : new Error(String(error))));
     const ticker = window.setInterval(progress, 120);
 
-    this.world = new World({ scene: this.scene, tracker: this.tracker, fontFamily });
+    this.world = new World({ scene: this.scene, tracker: this.tracker, fontFamily, media: this.media });
     let built = false;
     try {
       built = await this.world.build(

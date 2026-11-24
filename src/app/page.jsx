@@ -11,6 +11,10 @@ function hasPublicFile(/** @type {string} */ url) {
 }
 
 export default function HomePage() {
-  const media = { showreel: hasPublicFile(ASSET_PATHS.introVideo) };
+  const media = {
+    showreel: hasPublicFile(ASSET_PATHS.introVideo),
+    showreelPoster: hasPublicFile(ASSET_PATHS.showreelPoster),
+    studioPainting: hasPublicFile(ASSET_PATHS.studioPainting),
+  };
   return <WorldCanvas fallback={<WorldFallback />} media={media} />;
 }

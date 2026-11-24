@@ -10,7 +10,7 @@ import { createContext, useContext } from "react";
  * @typedef {object} WorldContextValue
  * @property {import("@/lib/state/worldState").WorldStateStore} state
  * @property {import("@/lib/three/Engine").Engine | null} engine
- * @property {{ showreel: boolean }} media  Which optional media files exist.
+ * @property {import("@/constants/assets").MediaFlags} media  Which optional media files exist.
  */
 
 export const WorldContext = createContext(/** @type {WorldContextValue | null} */ (null));

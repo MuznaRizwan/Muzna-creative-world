@@ -68,11 +68,12 @@ function createSurfaceSampler(sampled) {
  */
 export class World {
   /**
-   * @param {{ scene: THREE.Scene, tracker: import("../utils/ResourceTracker").ResourceTracker, fontFamily: string }} options
+   * @param {{ scene: THREE.Scene, tracker: import("../utils/ResourceTracker").ResourceTracker, fontFamily: string, media?: import("@/constants/assets").MediaFlags }} options
    */
-  constructor({ scene, tracker, fontFamily }) {
+  constructor({ scene, tracker, fontFamily, media }) {
     this.scene = scene;
     this.tracker = tracker;
+    this.media = media ?? { showreel: false, showreelPoster: false, studioPainting: false };
     this.kit = createKit(tracker, { fontFamily });
     this.textures = createTextures(this.kit);
     this.instances = new InstanceBuckets(createInstanceTypes(this.kit));
@@ -88,7 +89,7 @@ export class World {
     this.walkways = [];
     /** @type {(x: number, z: number) => number} */
     this.surfaceAt = heightAt;
-    /** @type {((delta: number, elapsed: number) => void)[]} */
+    /** @type {((delta: number, elapsed: number, camera: THREE.Camera) => void)[]} */
     this.updaters = [];
     /** @type {THREE.Mesh | null} */
     this.sky = null;
@@ -215,6 +216,7 @@ export class World {
     const ctx = {
       kit: this.kit,
       textures: this.textures,
+      media: this.media,
       zone,
       group,
       origin,
@@ -356,7 +358,7 @@ export class World {
    */
   update(delta, elapsed, camera) {
     if (this.sky) this.sky.position.copy(camera.position);
-    for (const update of this.updaters) update(delta, elapsed);
+    for (const update of this.updaters) update(delta, elapsed, camera);
     this.updateLanterns(elapsed);
   }
 

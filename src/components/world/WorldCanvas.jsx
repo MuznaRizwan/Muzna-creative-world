@@ -20,11 +20,13 @@ import { WorldError, WorldLoading } from "./WorldStatus";
  * The engine and the HTML overlays (prompt, menu, portfolio panel, dev panel)
  * share one world-state store, provided to the overlays through context.
  *
- * @param {{ fallback: import("react").ReactNode, media: { showreel: boolean } }} props
+ * @param {{ fallback: import("react").ReactNode, media: import("@/constants/assets").MediaFlags }} props
  *   `fallback` is shown when WebGL is unavailable; `media` says which optional files exist.
  */
 export function WorldCanvas({ fallback, media }) {
   const containerRef = useRef(/** @type {HTMLDivElement | null} */ (null));
+  // Read once by the engine (the cinema screen); fixed for the page's lifetime.
+  const mediaRef = useRef(media);
   const [status, setStatus] = useState(/** @type {"loading" | "ready" | "unsupported" | "error"} */ ("loading"));
   const [progress, setProgress] = useState(0);
   const [engine, setEngine] = useState(/** @type {import("@/lib/three/Engine").Engine | null} */ (null));
@@ -58,6 +60,7 @@ export function WorldCanvas({ fallback, media }) {
         }
         instance = new Engine(container, {
           state,
+          media: mediaRef.current,
           onProgress: (ratio) => {
             if (!cancelled) setProgress(ratio);
           },

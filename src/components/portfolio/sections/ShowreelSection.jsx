@@ -24,6 +24,7 @@ export function ShowreelSection() {
         <video
           className="aspect-video w-full rounded-xl border border-line bg-ink"
           src={ASSET_PATHS.introVideo}
+          poster={media.showreelPoster ? ASSET_PATHS.showreelPoster : undefined}
           controls
           playsInline
           preload="metadata"
@@ -31,6 +32,12 @@ export function ShowreelSection() {
         >
           <track kind="captions" />
         </video>
+      )}
+      {!missing && (
+        <p className="text-sm leading-relaxed text-muted">
+          A 52-second introduction to Muzna&apos;s Creative World, made in Adobe After Effects: the island, the eight places,
+          selected projects, skills and highlights.
+        </p>
       )}
     </div>
   );

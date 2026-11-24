@@ -1,5 +1,6 @@
 import * as THREE from "three";
 
+import { ASSET_PATHS } from "@/constants/assets";
 import { PALETTE } from "@/constants/world";
 
 import { jaaliPanel, planter } from "../props/furniture";
@@ -12,7 +13,7 @@ import { PAVING_TOP, entranceSign, opening, pavingRect } from "./common";
  * @param {import("./common").LocationContext} ctx
  */
 export function buildCreativeStudio(ctx) {
-  const { kit, textures, group, zone } = ctx;
+  const { kit, textures, media, group, zone } = ctx;
   pavingRect(ctx, 12, 12);
   const y0 = PAVING_TOP;
 
@@ -65,17 +66,37 @@ export function buildCreativeStudio(ctx) {
   }
   kit.block(easel, { w: 0.14, h: 5, d: 0.14, mat: timber, z: -0.9, rx: 0.22 });
   kit.block(easel, { w: 2.9, h: 0.14, d: 0.4, mat: timber, y: 1.1, z: 0.32 });
-  kit.block(easel, { w: 2.7, h: 3.3, d: 0.1, mat: kit.material("paper"), y: 1.2, z: 0.2, rx: -0.1 });
-  easel.add(
-    kit.mesh(kit.geo.plane(), kit.textured("easel", textures.easelPainting), {
-      y: 2.85,
-      z: 0.42,
-      rx: -0.1,
-      sx: 2.5,
-      sy: 3.1,
-      cast: false,
-    })
-  );
+  if (media.studioPainting) {
+    // Muzna's own acrylic painting (square canvas) on a board sized to it.
+    kit.block(easel, { w: 2.8, h: 2.8, d: 0.1, mat: kit.material("paper"), y: 1.2, z: 0.2, rx: -0.1 });
+    const canvas = kit.tracker.track(new THREE.MeshStandardMaterial({ color: PALETTE.paper, roughness: 0.85, metalness: 0 }));
+    const painting = kit.mesh(kit.geo.plane(), canvas, { y: 2.6, z: 0.42, rx: -0.1, sx: 2.6, sy: 2.6, cast: false });
+    painting.userData.dynamic = true; // its texture arrives after the world is built
+    easel.add(painting);
+    new THREE.TextureLoader().load(ASSET_PATHS.studioPainting, (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      kit.tracker.track(texture);
+      canvas.color.set("#ffffff");
+      canvas.map = texture;
+      // A little self-lighting (like a gallery spot) so a dark painting still reads in the scene.
+      canvas.emissive.set("#ffffff");
+      canvas.emissiveMap = texture;
+      canvas.emissiveIntensity = 0.55;
+      canvas.needsUpdate = true;
+    });
+  } else {
+    kit.block(easel, { w: 2.7, h: 3.3, d: 0.1, mat: kit.material("paper"), y: 1.2, z: 0.2, rx: -0.1 });
+    easel.add(
+      kit.mesh(kit.geo.plane(), kit.textured("easel", textures.easelPainting), {
+        y: 2.85,
+        z: 0.42,
+        rx: -0.1,
+        sx: 2.5,
+        sy: 3.1,
+        cast: false,
+      })
+    );
+  }
   ctx.collider(2.9, 2.2, 2.6, 2.0, 5);
   ctx.interactable({ id: "studio-easel", x: 1.6, y: 1.1, z: 3.4 });
 

@@ -1,5 +1,6 @@
 import * as THREE from "three";
 
+import { createShowreelScreen } from "../props/showreelScreen";
 import { PAVING_TOP, entranceSign, gableRoof, pavingCircle } from "./common";
 
 /**
@@ -21,7 +22,7 @@ function tierGeometry(inner, outer, start, end, height) {
  * @param {import("./common").LocationContext} ctx
  */
 export function buildCinema(ctx) {
-  const { kit, textures, group } = ctx;
+  const { kit, group } = ctx;
   pavingCircle(ctx, 6.5);
   const y0 = PAVING_TOP;
 
@@ -31,15 +32,7 @@ export function buildCinema(ctx) {
   for (const dx of [-4.4, 4.4]) kit.block(group, { w: 0.32, h: 5.6, d: 0.32, mat: timber, x: dx, y: y0, z: screenZ });
   kit.block(group, { w: 9.2, h: 0.4, d: 0.36, mat: timber, y: y0 + 5.5, z: screenZ });
   kit.block(group, { w: 8.4, h: 4.8, d: 0.12, mat: kit.material("ink"), y: y0 + 0.75, z: screenZ - 0.05 });
-  group.add(
-    kit.mesh(kit.geo.plane(), kit.textured("poster", textures.poster, { emissive: "#ffffff", emissiveIntensity: 0.55 }), {
-      y: y0 + 0.9 + 2.25,
-      z: screenZ + 0.02,
-      sx: 8,
-      sy: 4.5,
-      cast: false,
-    })
-  );
+  createShowreelScreen(ctx, { x: 0, y: y0 + 0.9 + 2.25, z: screenZ + 0.02, width: 8, height: 4.5 });
   kit.block(group, { w: 9, h: 0.3, d: 1.2, mat: kit.material("honey"), y: y0, z: screenZ + 0.5 });
   ctx.collider(0, screenZ, 9.2, 0.6, 5.9);
 
