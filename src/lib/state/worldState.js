@@ -5,7 +5,8 @@ import { createStore } from "./createStore";
  *
  * - Engine → UI: camera mode, the interactable in reach (`focus`).
  * - UI → engine: the open portfolio panel. While a panel is open the engine
- *   locks the cat's controls; closing it gives them back.
+ *   locks the cat's controls; closing it gives them back. Also the day/night
+ *   theme of the world.
  *
  * One instance per mounted world (created by WorldCanvas), so React Strict
  * Mode remounts never share stale state.
@@ -27,10 +28,11 @@ import { createStore } from "./createStore";
  * @property {boolean} catReady
  * @property {Interactable | null} focus
  * @property {OpenPanel | null} panel
+ * @property {"day" | "night"} theme  Golden hour or night in the 3D world.
  */
 
 export function createWorldState() {
-  const store = createStore(/** @type {WorldState} */ ({ mode: "dev", catReady: false, focus: null, panel: null }));
+  const store = createStore(/** @type {WorldState} */ ({ mode: "dev", catReady: false, focus: null, panel: null, theme: "day" }));
   return {
     ...store,
     /**

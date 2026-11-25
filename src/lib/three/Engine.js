@@ -123,6 +123,7 @@ export class Engine {
     // Opening or closing a portfolio panel locks or frees the cat, and on
     // phones pauses rendering behind the panel.
     this.unsubscribeState = state.subscribe((next, previous) => {
+      if (next.theme !== previous.theme) this.world?.setTheme(next.theme);
       if (next.panel === previous.panel) return;
       this.applyControlLock();
       this.applyPanelPause();
@@ -176,6 +177,8 @@ export class Engine {
       window.clearInterval(ticker);
     }
     if (!built || this.disposed) return false;
+    // Golden hour or night, as the visitor last chose (before compiling, so night shaders are ready too).
+    this.world.setTheme(this.state.getState().theme, { instant: true });
     report(0.96);
 
     // Compile shaders up front so the first frames don't stutter.
@@ -363,6 +366,11 @@ export class Engine {
     if (this.mode === "follow" && player && this.followCamera) this.followCamera.update(delta, player.view);
     else this.devCamera.update(delta);
     this.world?.update(delta, this.time.elapsed, this.devCamera.camera);
+    if (this.world?.shadowsDirty) {
+      // The sun/moon moved (day/night fade): redraw the otherwise static shadow map.
+      this.world.shadowsDirty = false;
+      this.renderer.shadowMap.needsUpdate = true;
+    }
   }
 
   handleVisibility() {

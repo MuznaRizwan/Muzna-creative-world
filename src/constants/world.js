@@ -157,6 +157,31 @@ export const PALETTE = Object.freeze({
   rose: "#E07AA0",
 });
 
+/**
+ * Night palette: the same island under a moonlit sky. Only the atmosphere and
+ * lights change; the painted materials keep their day colours.
+ */
+export const NIGHT_PALETTE = Object.freeze({
+  zenith: "#070a24",
+  band: "#18194a",
+  horizon: "#3b2d63",
+  haze: "#1b1838",
+  moon: "#cdd6ff",
+  /** Hemisphere fill: cool sky above, a dim violet bounce below. */
+  skyFill: "#6d74c4",
+  groundFill: "#3a2c4a",
+  /** Pools of lamplight on the ground and halos around the lamp heads. */
+  lampGlow: "#ffbe6b",
+});
+
+/** Day/night switching. */
+export const THEME = Object.freeze({
+  /** Seconds for the sky and lights to fade between golden hour and night. */
+  transition: 1.4,
+  /** localStorage key for the visitor's choice. */
+  storageKey: "creative-world:theme",
+});
+
 /** Rendering limits and budgets. */
 export const RENDER = Object.freeze({
   maxPixelRatio: 2,

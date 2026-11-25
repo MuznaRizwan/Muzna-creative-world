@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { SiteMenu } from "@/components/navigation/SiteMenu";
+import { readStoredTheme } from "@/components/navigation/ThemeToggle";
 import { InteractionPrompt } from "@/components/overlays/InteractionPrompt";
 import { SiteTitle } from "@/components/overlays/SiteTitle";
 import { TouchControls } from "@/components/overlays/TouchControls";
@@ -73,6 +74,9 @@ export function WorldCanvas({ fallback, media }) {
         );
       }
     };
+
+    // Golden hour or night, as the visitor last chose; the engine applies it once the world is built.
+    state.setState({ theme: readStoredTheme() });
 
     (async () => {
       try {

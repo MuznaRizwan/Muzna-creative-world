@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-import { PALETTE, WORLD } from "@/constants/world";
+import { PALETTE, THEME, WORLD } from "@/constants/world";
 import { INTERACTABLES } from "@/data/interactables";
 import { PATHS, SIGNPOSTS, ZONE_BY_ID, ZONES } from "@/data/worldLayout";
 import { CollisionWorld } from "@/lib/physics/CollisionWorld";
@@ -10,8 +10,9 @@ import { createDebugLayer } from "./debug";
 import { createBoundary } from "./environment/Boundary";
 import { createGround } from "./environment/Ground";
 import { createLighting } from "./environment/Lighting";
+import { collectGlowingMaterials, createNightLights } from "./environment/NightLights";
 import { createPaths, isInZone, samplePaths } from "./environment/Paths";
-import { createSky } from "./environment/Sky";
+import { blendSky, createSky } from "./environment/Sky";
 import { createLavenderField, createVegetation } from "./environment/Vegetation";
 import { createWater } from "./environment/Water";
 import { InstanceBuckets, createInstanceTypes } from "./instances";
@@ -97,8 +98,17 @@ export class World {
     this.lanterns = null;
     /** @type {THREE.Group | null} */
     this.debug = null;
-    /** @type {{ dispose: () => void } | null} */
+    /** @type {ReturnType<typeof createLighting> | null} */
     this.lighting = null;
+    /** @type {ReturnType<typeof createNightLights> | null} */
+    this.nightLights = null;
+    /** @type {ReturnType<typeof collectGlowingMaterials> | null} */
+    this.glowing = null;
+    /** Day/night blend: 0 = golden hour, 1 = night; eases towards `nightTarget`. */
+    this.night = 0;
+    this.nightTarget = 0;
+    /** Set when the light moved and the (static) shadow map must be redrawn. */
+    this.shadowsDirty = false;
     this.dummy = new THREE.Object3D();
   }
 
@@ -139,7 +149,7 @@ export class World {
     // 1. Atmosphere, ground and water.
     const lighting = createLighting(this.scene);
     this.lighting = lighting;
-    this.sky = createSky(kit, lighting.sunDirection);
+    this.sky = createSky(kit, lighting.lightDirection);
     this.scene.add(this.sky);
     root.add(createGround(kit));
     root.add(createWater(kit));
@@ -187,10 +197,21 @@ export class World {
     this.lanterns = this.createLanterns();
     root.add(this.lanterns);
 
+    // Night-only lamplight under the path lamps (read before the buckets become meshes).
+    const lamps = (instances.buckets.get("lampHead")?.matrices ?? []).map((m) => {
+      const [x, y, z] = [m.elements[12], m.elements[13], m.elements[14]];
+      return { x, y, z, ground: this.surfaceAt(x, z) };
+    });
+    this.nightLights = createNightLights(kit, lamps);
+    root.add(this.nightLights.group);
+
     for (const mesh of instances.build()) {
       this.tracker.track(mesh);
       root.add(mesh);
     }
+
+    this.glowing = collectGlowingMaterials(root);
+    this.applyNight(this.night);
 
     this.debug = createDebugLayer(kit, { colliders: this.colliders, interactables: this.interactables });
     root.add(this.debug);
@@ -267,6 +288,29 @@ export class World {
     });
     mesh.instanceMatrix.needsUpdate = true;
     mesh.computeBoundingSphere();
+  }
+
+  /**
+   * Golden hour or night. Fades over THEME.transition seconds unless `instant`
+   * (or the visitor prefers reduced motion).
+   * @param {"day" | "night"} theme
+   * @param {{ instant?: boolean }} [options]
+   */
+  setTheme(theme, { instant = false } = {}) {
+    this.nightTarget = theme === "night" ? 1 : 0;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (instant || reduce) this.applyNight(this.nightTarget);
+  }
+
+  /** @param {number} progress 0 = golden hour, 1 = night (eased in and out). */
+  applyNight(progress) {
+    this.night = progress;
+    const t = progress * progress * (3 - 2 * progress);
+    this.lighting?.apply(t);
+    if (this.sky) blendSky(this.sky, t);
+    this.nightLights?.setStrength(t);
+    this.glowing?.setStrength(t);
+    this.shadowsDirty = true;
   }
 
   /** @param {boolean} visible */
@@ -358,6 +402,11 @@ export class World {
    */
   update(delta, elapsed, camera) {
     if (this.sky) this.sky.position.copy(camera.position);
+    if (this.night !== this.nightTarget) {
+      const stepSize = delta / THEME.transition;
+      const next = this.night < this.nightTarget ? Math.min(this.nightTarget, this.night + stepSize) : Math.max(this.nightTarget, this.night - stepSize);
+      this.applyNight(next);
+    }
     for (const update of this.updaters) update(delta, elapsed, camera);
     this.updateLanterns(elapsed);
   }
