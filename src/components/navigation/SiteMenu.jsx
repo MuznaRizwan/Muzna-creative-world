@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { CatViewButton } from "@/components/overlays/CatView";
 import { useWorld } from "@/components/world/WorldContext";
 import { SECTIONS } from "@/data/portfolioSections";
 import { ZONE_BY_ID } from "@/data/worldLayout";
@@ -13,8 +14,8 @@ import { ThemeToggle } from "./ThemeToggle";
 /**
  * Conventional navigation: every portfolio section is one click away, so
  * nobody has to find the objects in the world to read the portfolio. Opening a
- * section here shows the same panel the world objects open. The day/night
- * switch sits beside it.
+ * section here shows the same panel the world objects open. The cat view
+ * and day/night switches sit beside it.
  */
 export function SiteMenu() {
   const { state } = useWorld();
@@ -44,6 +45,7 @@ export function SiteMenu() {
   return (
     <nav aria-label="Portfolio" className="absolute right-0 top-0 z-20 p-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
       <div className="flex items-center justify-end gap-2">
+        <CatViewButton />
         <ThemeToggle />
         <button
           ref={buttonRef}

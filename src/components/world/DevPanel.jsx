@@ -10,8 +10,8 @@ import { useWorld } from "./WorldContext";
 /**
  * Temporary developer controls: send the cat to each location, switch between
  * the follow camera and a free overview camera, and toggle the debug overlay.
- * Keyboard: 1–8 locations, 0 overview, C follow the cat, V inspect the cat
- * close up, G debug overlay.
+ * Keyboard: 1–8 locations, 0 overview, C follow the cat, G debug overlay.
+ * (V, the cat view, is available to everyone: see overlays/CatView.jsx.)
  * (Movement keys are handled by the engine.) Shown only in development, or
  * on any build when the URL has `?dev` (see WorldCanvas.jsx).
  *
@@ -40,7 +40,6 @@ export function DevPanel({ engine }) {
       if (event.key === "0") engine.showOverview();
       else if (/^[1-8]$/.test(event.key)) engine.focusLocation(ZONES[Number(event.key) - 1].id);
       else if (event.key.toLowerCase() === "c") engine.showCatView();
-      else if (event.key.toLowerCase() === "v") engine.inspectCat();
       else if (event.key.toLowerCase() === "g") {
         setDebug((value) => {
           engine.setDebug(!value);

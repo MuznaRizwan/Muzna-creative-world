@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { SiteMenu } from "@/components/navigation/SiteMenu";
 import { readStoredTheme } from "@/components/navigation/ThemeToggle";
+import { CatViewHint } from "@/components/overlays/CatView";
 import { InteractionPrompt } from "@/components/overlays/InteractionPrompt";
 import { SiteTitle } from "@/components/overlays/SiteTitle";
 import { TouchControls } from "@/components/overlays/TouchControls";
@@ -137,6 +138,7 @@ export function WorldCanvas({ fallback, media }) {
           {devTools && <DevPanel engine={engine} />}
           <InteractionPrompt />
           <TouchControls />
+          <CatViewHint />
           <SiteMenu />
           <PortfolioPanel />
         </WorldContext.Provider>
